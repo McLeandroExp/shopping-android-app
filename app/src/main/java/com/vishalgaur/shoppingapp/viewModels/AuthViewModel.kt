@@ -79,12 +79,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 					when (err) {
 						ERR_INIT -> {
 							_errorStatus.value = SignUpViewErrors.NONE
-							val uId = getRandomString(32, "91" + mobile.trim(), 6)
+							val uId = getRandomString(32, mobile.trim(), 6)
 							val newData =
 								UserData(
 									uId,
 									name.trim(),
-									"+91" + mobile.trim(),
+									mobile.trim(),
 									email.trim(),
 									pwd1.trim(),
 									ArrayList(),
@@ -122,7 +122,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 				_errorStatusLoginFragment.value = LoginViewErrors.ERR_MOBILE
 			} else {
 				_errorStatusLoginFragment.value = LoginViewErrors.NONE
-				logIn("+91" + mobile.trim(), password)
+				logIn(mobile.trim(), password)
 			}
 		}
 	}

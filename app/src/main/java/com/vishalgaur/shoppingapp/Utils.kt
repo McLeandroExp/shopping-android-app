@@ -29,7 +29,7 @@ internal fun isEmailValid(email: String): Boolean {
 }
 
 internal fun isPhoneValid(phone: String): Boolean {
-	val PHONE_PATTERN = Pattern.compile("^\\s*[6-9]\\d{9}\\s*\$")
+	val PHONE_PATTERN = Pattern.compile("^\\s*09\\d{8}\\s*$")
 	return if (phone.isEmpty()) {
 		false
 	} else {
@@ -70,5 +70,5 @@ internal fun getAddressId(userId: String): String {
 }
 
 internal fun shouldBypassOTPValidation() : Boolean {
-	return false
+	return true
 }

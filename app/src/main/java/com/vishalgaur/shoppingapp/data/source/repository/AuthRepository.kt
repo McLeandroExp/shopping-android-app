@@ -100,6 +100,9 @@ class AuthRepository(
 						)
 					}
 				}
+			} else {
+				// If document doesn't exist, it's a new DB, so user is unique
+				sErr = SignUpErrors.NONE
 			}
 		} catch (e: Exception) {
 			makeErrToast("Some Error Occurred", context)
