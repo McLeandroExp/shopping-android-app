@@ -56,7 +56,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	private var _userLikes = MutableLiveData<List<String>>()
 	val userLikes: LiveData<List<String>> get() = _userLikes
 
-	private var _filterCategory = MutableLiveData("All")
+	private var _filterCategory = MutableLiveData("Todos")
 	val filterCategory: LiveData<String> get() = _filterCategory
 
 	private val _storeDataStatus = MutableLiveData<StoreDataStatus>()
@@ -232,8 +232,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 		Log.d(TAG, "filterType is $filterType")
 		_filterCategory.value = filterType
 		_products.value = when (filterType) {
-			"None" -> emptyList()
-			"All" -> _allProducts.value
+			"Ninguno" -> emptyList()
+			"Todos" -> _allProducts.value
 			else -> _allProducts.value?.filter { product ->
 				product.category == filterType
 			}

@@ -130,7 +130,7 @@ class HomeFragment : Fragment() {
 		viewModel.allProducts.observe(viewLifecycleOwner) {
 			if (it.isNotEmpty()) {
 				viewModel.setDataLoaded()
-				viewModel.filterProducts("All")
+				viewModel.filterProducts("Todos")
 			}
 		}
 		viewModel.userLikes.observe(viewLifecycleOwner) {
@@ -149,7 +149,7 @@ class HomeFragment : Fragment() {
 	private fun setAppBarItemClicks(menuItem: MenuItem): Boolean {
 		return when (menuItem.itemId) {
 			R.id.home_filter -> {
-				val extraFilters = arrayOf("All", "None")
+				val extraFilters = arrayOf("Todos", "Ninguno")
 				val categoryList = ProductCategories.plus(extraFilters)
 				val checkedItem = categoryList.indexOf(viewModel.filterCategory.value)
 				showDialogWithItems(categoryList, checkedItem, true)

@@ -18,8 +18,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.utils.AddProductErrors
-import com.vishalgaur.shoppingapp.data.utils.ShoeColors
-import com.vishalgaur.shoppingapp.data.utils.ShoeSizes
+import com.vishalgaur.shoppingapp.data.utils.EquipmentTypes
+import com.vishalgaur.shoppingapp.data.utils.ProductVariants
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentAddEditProductBinding
 import com.vishalgaur.shoppingapp.ui.AddProductViewErrors
@@ -40,7 +40,7 @@ class AddEditProductFragment : Fragment() {
 	private lateinit var catName: String
 	private lateinit var productId: String
 
-	private var sizeList = mutableSetOf<Int>()
+	private var sizeList = mutableSetOf<String>()
 	private var colorsList = mutableSetOf<String>()
 	private var imgList = mutableListOf<Uri>()
 
@@ -140,22 +140,52 @@ class AddEditProductFragment : Fragment() {
 	private fun fillDataInAllViews() {
 		viewModel.productData.value?.let { product ->
 			Log.d(TAG, "fill data in views")
-			binding.addProAppBar.topAppBar.title = "Edit Product - ${product.name}"
+			binding.addProAppBar.topAppBar.title = "Editar Producto - ${product.name}"
 			binding.proNameEditText.setText(product.name)
 			binding.proPriceEditText.setText(product.price.toString())
-			binding.proMrpEditText.setText(product.mrp.toString())
+			// MRP field will be hidden
 			binding.proDescEditText.setText(product.description)
 
 			imgList = product.images.map { it.toUri() } as MutableList<Uri>
 			val adapter = AddProductImagesAdapter(requireContext(), imgList)
 			binding.addProImagesRv.adapter = adapter
 
-			setShoeSizesChips(product.availableSizes)
-			setShoeColorsChips(product.availableColors)
+			updateCategorySpecificViews(product.category, product.availableSizes, product.availableColors)
 
 			binding.addProBtn.setText(R.string.edit_product_btn_text)
 		}
+	}
 
+	private fun updateCategorySpecificViews(category: String, selectedVariants: List<String> = emptyList(), selectedTypes: List<String> = emptyList()) {
+		// Global: Hide MRP and Presentation (colors) label/chips by default
+		binding.mrpOutlinedTextField.visibility = View.GONE
+		binding.addProMrpLabel.visibility = View.GONE
+		
+		// Reset visibility
+		binding.addProSizesLabel.visibility = View.VISIBLE
+		binding.addProSizeChipGroup.visibility = View.VISIBLE
+		binding.addProColorLabel.visibility = View.GONE
+		binding.addProColorChipGroup.visibility = View.GONE
+
+		when (category) {
+			"Medicamentos", "Suplementos" -> {
+				binding.addProSizesLabel.text = getString(R.string.add_pro_sizes_label_text)
+				setProductVariantsChips(selectedVariants)
+			}
+			"Equipos Médicos" -> {
+				binding.addProSizesLabel.visibility = View.GONE
+				binding.addProSizeChipGroup.visibility = View.GONE
+				
+				binding.addProColorLabel.visibility = View.VISIBLE
+				binding.addProColorChipGroup.visibility = View.VISIBLE
+				binding.addProColorLabel.text = "Tipo de Equipo"
+				setEquipmentTypesChips(selectedTypes)
+			}
+			"Cuidado Personal" -> {
+				binding.addProSizesLabel.visibility = View.GONE
+				binding.addProSizeChipGroup.visibility = View.GONE
+			}
+		}
 	}
 
 	private fun setViews() {
@@ -163,10 +193,12 @@ class AddEditProductFragment : Fragment() {
 
 		if (!isEdit) {
 			binding.addProAppBar.topAppBar.title =
-				"Add Product - ${viewModel.selectedCategory.value}"
+				"Añadir Producto - ${viewModel.selectedCategory.value}"
 
 			val adapter = AddProductImagesAdapter(requireContext(), imgList)
 			binding.addProImagesRv.adapter = adapter
+			
+			updateCategorySpecificViews(viewModel.selectedCategory.value ?: "")
 		}
 		binding.addProImagesBtn.setOnClickListener {
 			getImages.launch("image/*")
@@ -177,14 +209,9 @@ class AddEditProductFragment : Fragment() {
 		}
 
 		binding.loaderLayout.loaderFrameLayout.visibility = View.GONE
-
-		setShoeSizesChips()
-		setShoeColorsChips()
-
 		binding.addProErrorTextView.visibility = View.GONE
 		binding.proNameEditText.onFocusChangeListener = focusChangeListener
 		binding.proPriceEditText.onFocusChangeListener = focusChangeListener
-		binding.proMrpEditText.onFocusChangeListener = focusChangeListener
 		binding.proDescEditText.onFocusChangeListener = focusChangeListener
 
 		binding.addProBtn.setOnClickListener {
@@ -202,7 +229,7 @@ class AddEditProductFragment : Fragment() {
 	private fun onAddProduct() {
 		val name = binding.proNameEditText.text.toString()
 		val price = binding.proPriceEditText.text.toString().toDoubleOrNull()
-		val mrp = binding.proMrpEditText.text.toString().toDoubleOrNull()
+		val mrp = price // Setting MRP same as price since it's hidden
 		val desc = binding.proDescEditText.text.toString()
 		Log.d(
 			TAG,
@@ -213,24 +240,24 @@ class AddEditProductFragment : Fragment() {
 		)
 	}
 
-	private fun setShoeSizesChips(shoeList: List<Int>? = emptyList()) {
+	private fun setProductVariantsChips(selectedList: List<String>? = emptyList()) {
 		binding.addProSizeChipGroup.apply {
 			removeAllViews()
-			for ((_, v) in ShoeSizes) {
+			for ((k, v) in ProductVariants) {
 				val chip = Chip(context)
-				chip.id = v
+				chip.id = View.generateViewId()
 				chip.tag = v
 
-				chip.text = "$v"
+				chip.text = k
 				chip.isCheckable = true
 
-				if (shoeList?.contains(v) == true) {
+				if (selectedList?.contains(v) == true) {
 					chip.isChecked = true
-					sizeList.add(chip.tag.toString().toInt())
+					sizeList.add(chip.tag.toString())
 				}
 
 				chip.setOnCheckedChangeListener { buttonView, isChecked ->
-					val tag = buttonView.tag.toString().toInt()
+					val tag = buttonView.tag.toString()
 					if (!isChecked) {
 						sizeList.remove(tag)
 					} else {
@@ -243,13 +270,12 @@ class AddEditProductFragment : Fragment() {
 		}
 	}
 
-	private fun setShoeColorsChips(colorList: List<String>? = emptyList()) {
+	private fun setEquipmentTypesChips(selectedList: List<String>? = emptyList()) {
 		binding.addProColorChipGroup.apply {
 			removeAllViews()
-			var ind = 1
-			for ((k, v) in ShoeColors) {
+			for ((k, v) in EquipmentTypes) {
 				val chip = Chip(context)
-				chip.id = ind
+				chip.id = View.generateViewId()
 				chip.tag = k
 
 				chip.chipStrokeColor = ColorStateList.valueOf(Color.BLACK)
@@ -261,7 +287,7 @@ class AddEditProductFragment : Fragment() {
 				chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor(v))
 				chip.isCheckable = true
 
-				if (colorList?.contains(k) == true) {
+				if (selectedList?.contains(k) == true) {
 					chip.isChecked = true
 					colorsList.add(chip.tag.toString())
 				}
@@ -275,7 +301,6 @@ class AddEditProductFragment : Fragment() {
 					}
 				}
 				addView(chip)
-				ind++
 			}
 			invalidate()
 		}

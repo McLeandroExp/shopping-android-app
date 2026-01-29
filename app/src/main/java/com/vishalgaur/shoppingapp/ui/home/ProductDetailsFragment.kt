@@ -24,8 +24,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.utils.AddObjectStatus
-import com.vishalgaur.shoppingapp.data.utils.ShoeColors
-import com.vishalgaur.shoppingapp.data.utils.ShoeSizes
+import com.vishalgaur.shoppingapp.data.utils.EquipmentTypes
+import com.vishalgaur.shoppingapp.data.utils.ProductVariants
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentProductDetailsBinding
 import com.vishalgaur.shoppingapp.ui.AddItemErrors
@@ -49,7 +49,7 @@ class ProductDetailsFragment : Fragment() {
 
 	private lateinit var binding: FragmentProductDetailsBinding
 	private lateinit var viewModel: ProductViewModel
-	private var selectedSize: Int? = null
+	private var selectedSize: String? = null
 	private var selectedColor: String? = null
 
 	override fun onCreateView(
@@ -184,8 +184,7 @@ class ProductDetailsFragment : Fragment() {
 			R.string.pro_details_price_value,
 			viewModel.productData.value?.price.toString()
 		)
-		setShoeSizeButtons()
-		setShoeColorsButtons()
+		updateCategorySpecificViews(viewModel.productData.value?.category ?: "")
 		binding.proDetailsSpecificsText.text = viewModel.productData.value?.description ?: ""
 	}
 
@@ -220,32 +219,46 @@ class ProductDetailsFragment : Fragment() {
 		}
 	}
 
-	private fun setShoeSizeButtons() {
+	private fun updateCategorySpecificViews(category: String) {
+		// Reset visibility
+		binding.proDetailsSelectSizeLabel.visibility = View.VISIBLE
+		binding.proDetailsSizesRadioGroup.visibility = View.VISIBLE
+		binding.proDetailsSelectColorLabel.visibility = View.GONE
+		binding.proDetailsColorsRadioGroup.visibility = View.GONE
+
+		when (category) {
+			"Medicamentos", "Suplementos" -> {
+				binding.proDetailsSelectSizeLabel.text = getString(R.string.pro_details_select_size_lable_text)
+				setProductVariantsButtons()
+			}
+			"Equipos Médicos" -> {
+				binding.proDetailsSelectSizeLabel.visibility = View.GONE
+				binding.proDetailsSizesRadioGroup.visibility = View.GONE
+				
+				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
+				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proDetailsSelectColorLabel.text = "Tipo de Equipo"
+				setEquipmentTypesButtons()
+			}
+			"Cuidado Personal" -> {
+				binding.proDetailsSelectSizeLabel.visibility = View.GONE
+				binding.proDetailsSizesRadioGroup.visibility = View.GONE
+			}
+		}
+	}
+
+	private fun setProductVariantsButtons() {
 		binding.proDetailsSizesRadioGroup.apply {
-			for ((_, v) in ShoeSizes) {
+			removeAllViews()
+			for ((k, v) in ProductVariants) {
 				if (viewModel.productData.value?.availableSizes?.contains(v) == true) {
 					val radioButton = RadioButton(context)
-					radioButton.id = v
+					radioButton.id = View.generateViewId()
 					radioButton.tag = v
-					val param =
-						binding.proDetailsSizesRadioGroup.layoutParams as ViewGroup.MarginLayoutParams
-					param.setMargins(resources.getDimensionPixelSize(R.dimen.radio_margin_size))
-					param.width = ViewGroup.LayoutParams.WRAP_CONTENT
-					param.height = ViewGroup.LayoutParams.WRAP_CONTENT
-					radioButton.layoutParams = param
-					radioButton.background =
-						ContextCompat.getDrawable(context, R.drawable.radio_selector)
-					radioButton.setButtonDrawable(R.color.transparent)
-					radioButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
-					radioButton.setTextColor(Color.BLACK)
-					radioButton.setTypeface(null, Typeface.BOLD)
-					radioButton.textAlignment = View.TEXT_ALIGNMENT_CENTER
-					radioButton.text = "$v"
+					// ... same logic for layout params and styling
+					setupRadioButton(radioButton, k)
 					radioButton.setOnCheckedChangeListener { buttonView, isChecked ->
-						val tag = buttonView.tag.toString().toInt()
-						if (isChecked) {
-							selectedSize = tag
-						}
+						if (isChecked) selectedSize = buttonView.tag.toString()
 					}
 					addView(radioButton)
 				}
@@ -254,40 +267,41 @@ class ProductDetailsFragment : Fragment() {
 		}
 	}
 
-	private fun setShoeColorsButtons() {
+	private fun setEquipmentTypesButtons() {
 		binding.proDetailsColorsRadioGroup.apply {
-			var ind = 1
-			for ((k, v) in ShoeColors) {
+			removeAllViews()
+			for ((k, v) in EquipmentTypes) {
 				if (viewModel.productData.value?.availableColors?.contains(k) == true) {
 					val radioButton = RadioButton(context)
-					radioButton.id = ind
+					radioButton.id = View.generateViewId()
 					radioButton.tag = k
-					val param =
-						binding.proDetailsColorsRadioGroup.layoutParams as ViewGroup.MarginLayoutParams
-					param.setMargins(resources.getDimensionPixelSize(R.dimen.radio_margin_size))
-					param.width = ViewGroup.LayoutParams.WRAP_CONTENT
-					param.height = ViewGroup.LayoutParams.WRAP_CONTENT
-					radioButton.layoutParams = param
-					radioButton.background =
-						ContextCompat.getDrawable(context, R.drawable.color_radio_selector)
-					radioButton.setButtonDrawable(R.color.transparent)
-					radioButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor(v))
-					if (k == "white") {
-						radioButton.backgroundTintMode = PorterDuff.Mode.MULTIPLY
-					} else {
-						radioButton.backgroundTintMode = PorterDuff.Mode.ADD
-					}
+					setupRadioButton(radioButton, k, v)
 					radioButton.setOnCheckedChangeListener { buttonView, isChecked ->
-						val tag = buttonView.tag.toString()
-						if (isChecked) {
-							selectedColor = tag
-						}
+						if (isChecked) selectedColor = buttonView.tag.toString()
 					}
 					addView(radioButton)
-					ind++
 				}
 			}
 			invalidate()
+		}
+	}
+
+	private fun setupRadioButton(radioButton: RadioButton, text: String, colorHex: String? = null) {
+		val param = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+		param.setMargins(resources.getDimensionPixelSize(R.dimen.radio_margin_size))
+		radioButton.layoutParams = param
+		
+		if (colorHex != null) {
+			radioButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.color_radio_selector)
+			radioButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor(colorHex))
+			radioButton.setButtonDrawable(R.color.transparent)
+		} else {
+			radioButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.radio_selector)
+			radioButton.setButtonDrawable(R.color.transparent)
+			radioButton.text = text
+			radioButton.setTextColor(Color.BLACK)
+			radioButton.setTypeface(null, Typeface.BOLD)
+			radioButton.textAlignment = View.TEXT_ALIGNMENT_CENTER
 		}
 	}
 }

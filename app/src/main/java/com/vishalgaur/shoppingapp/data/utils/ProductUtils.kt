@@ -1,26 +1,21 @@
 package com.vishalgaur.shoppingapp.data.utils
 
-val ShoeSizes = mapOf(
-	"UK4" to 4,
-	"UK5" to 5,
-	"UK6" to 6,
-	"UK7" to 7,
-	"UK8" to 8,
-	"UK9" to 9,
-	"UK10" to 10,
-	"UK11" to 11,
-	"UK12" to 12
+val ProductVariants = mapOf(
+	"250mg" to "250mg",
+	"500mg" to "500mg",
+	"1g" to "1g",
+	"100ml" to "100ml",
+	"250ml" to "250ml",
+	"500ml" to "500ml",
+	"1L" to "1L"
 )
 
-val ShoeColors = mapOf(
-	"black" to "#000000",
-	"white" to "#FFFFFF",
-	"red" to "#FF0000",
-	"green" to "#00FF00",
-	"blue" to "#0000FF",
-	"yellow" to "#FFFF00",
-	"cyan" to "#00FFFF",
-	"magenta" to "#FF00FF"
+val EquipmentTypes = mapOf(
+	"Equipo de Diagnóstico" to "#2196F3",
+	"Equipo de Soporte Vital" to "#F44336",
+	"De Monitoreo" to "#4CAF50",
+	"Terapéutico" to "#FFEB3B",
+	"De Laboratorio" to "#9E9E9E"
 )
 
-val ProductCategories = arrayOf("Shoes", "Slippers")
+val ProductCategories = arrayOf("Medicamentos", "Equipos Médicos", "Cuidado Personal", "Suplementos")

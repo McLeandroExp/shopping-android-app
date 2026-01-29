@@ -49,16 +49,8 @@ class ProductAdapter(proList: List<Any>, userLikes: List<String>, private val co
 			proPrice.text =
 				context.getString(R.string.pro_details_price_value, productData.price.toString())
 			proRatingBar.rating = productData.rating.toFloat()
-			proMrp.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-			proMrp.text =
-				context.getString(
-					R.string.pro_details_actual_strike_value,
-					productData.mrp.toString()
-				)
-			proOffer.text = context.getString(
-				R.string.pro_offer_precent_text,
-				getOfferPercentage(productData.mrp, productData.price).toString()
-			)
+			proMrp.visibility = View.GONE
+			proOffer.visibility = View.GONE
 			if (productData.images.isNotEmpty()) {
 				val imgUrl = productData.images[0].toUri().buildUpon().scheme("https").build()
 				Glide.with(context)

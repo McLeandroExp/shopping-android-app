@@ -94,11 +94,18 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 		price: Double?,
 		mrp: Double?,
 		desc: String,
-		sizes: List<Int>,
+		sizes: List<String>,
 		colors: List<String>,
 		imgList: List<Uri>,
 	) {
-		if (name.isBlank() || price == null || mrp == null || desc.isBlank() || sizes.isNullOrEmpty() || colors.isNullOrEmpty() || imgList.isNullOrEmpty()) {
+		val isSizesRequired = _selectedCategory.value in listOf("Medicamentos", "Suplementos")
+		val isColorsRequired = _selectedCategory.value == "Equipos Médicos"
+
+		val isInvalid = name.isBlank() || price == null || mrp == null || desc.isBlank() || imgList.isNullOrEmpty() ||
+				(isSizesRequired && sizes.isEmpty()) || 
+				(isColorsRequired && colors.isEmpty())
+
+		if (isInvalid) {
 			_errorStatus.value = AddProductViewErrors.EMPTY
 		} else {
 			if (price == 0.0 || mrp == 0.0) {
@@ -114,8 +121,8 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 						currentUser!!,
 						desc.trim(),
 						_selectedCategory.value!!,
-						price,
-						mrp,
+						price!!,
+						mrp!!,
 						sizes,
 						colors,
 						emptyList(),

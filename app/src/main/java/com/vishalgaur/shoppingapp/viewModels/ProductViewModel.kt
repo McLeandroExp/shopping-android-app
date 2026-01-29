@@ -134,9 +134,9 @@ class ProductViewModel(private val productId: String, application: Application) 
 		}
 	}
 
-	fun addToCart(size: Int?, color: String?) {
+	fun addToCart(size: String?, color: String?) {
 		val errList = mutableListOf<AddItemErrors>()
-		if (size == null) errList.add(AddItemErrors.ERROR_SIZE)
+		if (size.isNullOrBlank()) errList.add(AddItemErrors.ERROR_SIZE)
 		if (color.isNullOrBlank()) errList.add(AddItemErrors.ERROR_COLOR)
 
 		if (errList.isEmpty()) {

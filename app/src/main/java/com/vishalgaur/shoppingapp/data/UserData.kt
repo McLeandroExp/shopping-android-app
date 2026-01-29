@@ -105,9 +105,9 @@ data class UserData(
 		var ownerId: String = "",
 		var quantity: Int = 0,
 		var color: String?,
-		var size: Int?
+		var size: String?
 	) : Parcelable {
-		constructor() : this("", "", "", 0, "NA", -1)
+		constructor() : this("", "", "", 0, "NA", "NA")
 
 		fun toHashMap(): HashMap<String, Any> {
 			val hashMap = hashMapOf<String, Any>()
