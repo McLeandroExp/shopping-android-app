@@ -77,7 +77,7 @@ class ProductDetailsFragment : Fragment() {
 					if (viewModel.errorStatus.value?.isEmpty() == true) {
 						viewModel.addItemStatus.observe(viewLifecycleOwner) { status ->
 							if (status == AddObjectStatus.DONE) {
-								makeToast("Product Added To Cart")
+								makeToast("Producto añadido al carrito")
 								viewModel.checkIfInCart()
 							}
 						}
@@ -141,7 +141,7 @@ class ProductDetailsFragment : Fragment() {
 
 	@SuppressLint("ResourceAsColor")
 	private fun modifyErrors(errList: List<AddItemErrors>) {
-		makeToast("Please Select Size and Color.")
+		makeToast("Por favor selecciona una variante o tipo.")
 		if (!errList.isNullOrEmpty()) {
 			errList.forEach { err ->
 				when (err) {
