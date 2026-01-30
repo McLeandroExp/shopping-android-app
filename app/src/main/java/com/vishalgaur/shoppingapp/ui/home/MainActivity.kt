@@ -37,16 +37,15 @@ class MainActivity : AppCompatActivity() {
 				R.id.cartFragment -> setBottomNavVisibility(View.VISIBLE)
 				R.id.accountFragment -> setBottomNavVisibility(View.VISIBLE)
 				R.id.ordersFragment -> setBottomNavVisibility(View.VISIBLE)
+				R.id.myProductsFragment -> setBottomNavVisibility(View.VISIBLE)
 				R.id.orderSuccessFragment -> setBottomNavVisibility(View.VISIBLE)
 				else -> setBottomNavVisibility(View.GONE)
 			}
 		}
 
 		val sessionManager = ShoppingAppSessionManager(this.applicationContext)
-		if (sessionManager.isUserSeller()) {
-			binding.homeBottomNavigation.menu.removeItem(R.id.cartFragment)
-		}else {
-			binding.homeBottomNavigation.menu.removeItem(R.id.ordersFragment)
+		if (!sessionManager.isUserSeller()) {
+			binding.homeBottomNavigation.menu.removeItem(R.id.myProductsFragment)
 		}
 	}
 

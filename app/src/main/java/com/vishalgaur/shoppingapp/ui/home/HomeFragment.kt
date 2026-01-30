@@ -53,6 +53,12 @@ class HomeFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		viewModel.getUserLikes()
+		val showOnlyMine = arguments?.getBoolean("showOnlyMine") ?: false
+		if (showOnlyMine) {
+			viewModel.setSourceToMine()
+		} else {
+			viewModel.setSourceToAll()
+		}
 	}
 
 //	override fun onResume() {
@@ -114,7 +120,7 @@ class HomeFragment : Fragment() {
 			}
 			if (status != null && status != StoreDataStatus.LOADING) {
 				viewModel.products.observe(viewLifecycleOwner) { productsList ->
-					if (productsList.isNotEmpty()) {
+					if (productsList != null) {
 						binding.loaderLayout.circularLoader.hideAnimationBehavior
 						binding.loaderLayout.loaderFrameLayout.visibility = View.GONE
 						binding.productsRecyclerView.visibility = View.VISIBLE
@@ -128,9 +134,9 @@ class HomeFragment : Fragment() {
 			}
 		}
 		viewModel.allProducts.observe(viewLifecycleOwner) {
-			if (it.isNotEmpty()) {
+			if (it != null) {
 				viewModel.setDataLoaded()
-				viewModel.filterProducts("Todos")
+				viewModel.filterProducts(viewModel.filterCategory.value ?: "Todos")
 			}
 		}
 		viewModel.userLikes.observe(viewLifecycleOwner) {

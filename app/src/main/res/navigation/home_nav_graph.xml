@@ -168,4 +168,17 @@
         android:name="com.vishalgaur.shoppingapp.ui.home.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/myProductsFragment"
+        android:name="com.vishalgaur.shoppingapp.ui.home.HomeFragment"
+        android:label="MyProductsFragment"
+        tools:layout="@layout/fragment_home">
+        <argument
+            android:name="showOnlyMine"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <action
+            android:id="@+id/action_myProducts_to_productDetails"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
 </navigation>

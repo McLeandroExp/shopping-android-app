@@ -166,5 +166,5 @@
     <string name="redirect_home_timer_text">Redirigiendo al inicio en %s</string>
     <string name="status_dialog_title">Selecciona el Estado del Producto</string>
     <string name="price_card_status_label_string">Estado del Pedido</string>
-
+    <string name="bottom_nav_my_products_label">Mis Productos</string>
 </resources>

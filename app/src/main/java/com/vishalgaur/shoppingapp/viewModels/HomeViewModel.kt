@@ -29,11 +29,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	private val currentUser = sessionManager.getUserIdFromSession()
 	val isUserASeller = sessionManager.isUserSeller()
 
-	private var _products = MutableLiveData<List<Product>>()
-	val products: LiveData<List<Product>> get() = _products
+	private val _shouldShowOnlyMine = MutableLiveData<Boolean>(false)
 
-	private lateinit var _allProducts: MutableLiveData<List<Product>>
-	val allProducts: LiveData<List<Product>> get() = _allProducts
+	val allProducts: LiveData<List<Product>> = Transformations.switchMap(_shouldShowOnlyMine) { onlyMine ->
+		if (onlyMine) {
+			Transformations.switchMap(productsRepository.observeProductsByOwner(currentUser!!)) {
+				getProductsLiveData(it)
+			}
+		} else {
+			Transformations.switchMap(productsRepository.observeProducts()) {
+				getProductsLiveData(it)
+			}
+		}
+	}
 
 	private var _userProducts = MutableLiveData<List<Product>>()
 	val userProducts: LiveData<List<Product>> get() = _userProducts
@@ -68,16 +76,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	private val _userData = MutableLiveData<UserData?>()
 	val userData: LiveData<UserData?> get() = _userData
 
+	private val _products = MediatorLiveData<List<Product>>()
+	val products: LiveData<List<Product>> get() = _products
+
 	init {
 		viewModelScope.launch {
 			authRepository.hardRefreshUserData()
 			getUserLikes()
+			getUserData()
 		}
 
-		if (isUserASeller)
-			getProductsByOwner()
-		else
-			getProducts()
+		_products.addSource(allProducts) {
+			filterProducts(_filterCategory.value ?: "Todos")
+		}
 	}
 
 	fun setDataLoaded() {
@@ -124,27 +135,57 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	}
 
 	fun isProductInCart(productId: String): Boolean {
-		return false
+		return _userData.value?.cart?.any { it.productId == productId } == true
 	}
 
 	fun toggleProductInCart(product: Product) {
-
+		val cartItem = _userData.value?.cart?.find { it.productId == product.productId }
+		if (cartItem != null) {
+			// Remove from cart
+			viewModelScope.launch {
+				val res = authRepository.deleteCartItemByUserId(cartItem.itemId, currentUser!!)
+				if (res is Success) {
+					getUserData()
+				}
+			}
+		} else {
+			// Add to cart
+			val isSizesRequired = product.category in listOf("Medicamentos", "Suplementos")
+			val isColorsRequired = product.category == "Equipos Médicos"
+			
+			if (isSizesRequired || isColorsRequired) {
+				// Cannot add directly without variant, maybe we should trigger a toast or something
+				// But since we can't easily toast from here without a context/event, 
+				// let's assume we want to guide user to details if they click add.
+				// However, if it's medical, it's safer to not add it.
+				return
+			}
+			
+			viewModelScope.launch {
+				val itemId = UUID.randomUUID().toString()
+				val newItem = UserData.CartItem(
+					itemId, product.productId, product.owner, 1, null, null
+				)
+				val res = authRepository.insertCartItemByUserId(newItem, currentUser!!)
+				if (res is Success) {
+					getUserData()
+				}
+			}
+		}
 	}
 
 	fun setDataLoading() {
 		_dataStatus.value = StoreDataStatus.LOADING
 	}
 
-	private fun getProducts() {
-		_allProducts = Transformations.switchMap(productsRepository.observeProducts()) {
-			getProductsLiveData(it)
-		} as MutableLiveData<List<Product>>
-		viewModelScope.launch {
-			_storeDataStatus.value = StoreDataStatus.LOADING
-			val res = async { productsRepository.refreshProducts() }
-			res.await()
-			Log.d(TAG, "getAllProducts: status = ${_storeDataStatus.value}")
-		}
+	fun setSourceToAll() {
+		_shouldShowOnlyMine.value = false
+		refreshProducts()
+	}
+
+	fun setSourceToMine() {
+		_shouldShowOnlyMine.value = true
+		refreshProducts()
 	}
 
 	fun getUserLikes() {
@@ -173,7 +214,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 				Log.d(TAG, "alllikes = ${allLikes.size}")
 				_dataStatus.value = StoreDataStatus.DONE
 				allLikes.map { proId ->
-					_allProducts.value?.find { it.productId == proId } ?: Product()
+					allProducts.value?.find { it.productId == proId } ?: Product()
 				}
 			} else {
 				_dataStatus.value = StoreDataStatus.ERROR
@@ -202,22 +243,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 		return res
 	}
 
-	private fun getProductsByOwner() {
-		_allProducts =
-			Transformations.switchMap(productsRepository.observeProductsByOwner(currentUser!!)) {
-				Log.d(TAG, it.toString())
-				getProductsLiveData(it)
-			} as MutableLiveData<List<Product>>
+
+	fun refreshProducts() {
 		viewModelScope.launch {
 			_storeDataStatus.value = StoreDataStatus.LOADING
 			val res = async { productsRepository.refreshProducts() }
 			res.await()
-			Log.d(TAG, "getProductsByOwner: status = ${_storeDataStatus.value}")
+			Log.d(TAG, "refreshProducts: status = ${_storeDataStatus.value}")
 		}
-	}
-
-	fun refreshProducts() {
-		getProducts()
 	}
 
 	fun filterBySearch(queryText: String) {
@@ -231,10 +264,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	fun filterProducts(filterType: String) {
 		Log.d(TAG, "filterType is $filterType")
 		_filterCategory.value = filterType
+		val allPros = allProducts.value ?: emptyList()
 		_products.value = when (filterType) {
 			"Ninguno" -> emptyList()
-			"Todos" -> _allProducts.value
-			else -> _allProducts.value?.filter { product ->
+			"Todos" -> allPros
+			else -> allPros.filter { product ->
 				product.category == filterType
 			}
 		}
@@ -285,7 +319,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 					_selectedOrder.value = orderData
 					_orderProducts.value =
 						orderData.items.map {
-							_allProducts.value?.find { pro -> pro.productId == it.productId }
+							allProducts.value?.find { pro -> pro.productId == it.productId }
 								?: Product()
 						}
 					_storeDataStatus.value = StoreDataStatus.DONE
