@@ -114,28 +114,38 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 		}
 	}
 
-	fun loginSubmitData(mobile: String, password: String) {
-		if (mobile.isBlank() || password.isBlank()) {
+	fun loginSubmitData(email: String, password: String) {
+		if (email.isBlank() || password.isBlank()) {
 			_errorStatusLoginFragment.value = LoginViewErrors.ERR_EMPTY
 		} else {
-			if (!isPhoneValid(mobile)) {
-				_errorStatusLoginFragment.value = LoginViewErrors.ERR_MOBILE
+			if (!isEmailValid(email)) {
+				_errorStatusLoginFragment.value = LoginViewErrors.ERR_EMAIL
 			} else {
 				_errorStatusLoginFragment.value = LoginViewErrors.NONE
-				logIn(mobile.trim(), password)
+				logIn(email.trim(), password)
 			}
 		}
 	}
 
-	private fun logIn(phoneNumber: String, pwd: String) {
+	private fun logIn(email: String, pwd: String) {
 		viewModelScope.launch {
-			val res = async { authRepository.checkLogin(phoneNumber, pwd) }
+			val res = async { authRepository.checkLogin(email, pwd) }
 			_userData.value = res.await()
 			if (_userData.value != null) {
 				_loginErrorStatus.value = LogInErrors.NONE
 			} else {
 				_loginErrorStatus.value = LogInErrors.LERR
 			}
+		}
+	}
+
+	fun login(userData: UserData, isRemOn: Boolean) {
+		authRepository.login(userData, isRemOn)
+	}
+
+	fun signUp(userData: UserData) {
+		viewModelScope.launch {
+			authRepository.signUp(userData)
 		}
 	}
 

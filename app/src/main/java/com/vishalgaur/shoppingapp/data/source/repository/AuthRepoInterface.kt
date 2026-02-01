@@ -13,7 +13,7 @@ interface AuthRepoInterface {
 	suspend fun signUp(userData: UserData)
 	fun login(userData: UserData, rememberMe: Boolean)
 	suspend fun checkEmailAndMobile(email: String, mobile: String, context: Context): SignUpErrors?
-	suspend fun checkLogin(mobile: String, password: String): UserData?
+	suspend fun checkLogin(email: String, password: String): UserData?
 	suspend fun signOut()
 	suspend fun hardRefreshUserData()
 	suspend fun insertProductToLikes(productId: String, userId: String): Result<Boolean>

@@ -22,6 +22,13 @@ interface UserDataSource {
 		return mutableListOf()
 	}
 
+	suspend fun getUserByEmailAndPassword(
+		email: String,
+		password: String
+	): MutableList<UserData> {
+		return mutableListOf()
+	}
+
 	suspend fun likeProduct(productId: String, userId: String) {}
 
 	suspend fun dislikeProduct(productId: String, userId: String) {}
@@ -45,6 +52,10 @@ interface UserDataSource {
 	suspend fun clearUser() {}
 
 	suspend fun getUserByMobile(phoneNumber: String): UserData? {
+		return null
+	}
+
+	suspend fun getUserByEmail(email: String): UserData? {
 		return null
 	}
 

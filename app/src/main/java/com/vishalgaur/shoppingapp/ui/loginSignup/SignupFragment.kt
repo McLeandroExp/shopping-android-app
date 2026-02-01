@@ -43,8 +43,9 @@ class SignupFragment : LoginSignupBaseFragment<FragmentSignupBinding>() {
 				if (viewModel.errorStatus.value == SignUpViewErrors.NONE) {
 					viewModel.signErrorStatus.observe(viewLifecycleOwner) {
 						if (it == SignUpErrors.NONE) {
-							val bundle = bundleOf("uData" to viewModel.userData.value)
-							launchOtpActivity(getString(R.string.signup_fragment_label), bundle)
+							viewModel.userData.value?.let { userData ->
+								signUpUser(userData)
+							}
 						}
 					}
 				}

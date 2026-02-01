@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewbinding.ViewBinding
+import com.vishalgaur.shoppingapp.data.UserData
 import com.vishalgaur.shoppingapp.ui.MyOnFocusChangeListener
+import com.vishalgaur.shoppingapp.ui.home.MainActivity
 import com.vishalgaur.shoppingapp.viewModels.AuthViewModel
 
 abstract class LoginSignupBaseFragment<VBinding : ViewBinding> : Fragment() {
@@ -41,6 +43,22 @@ abstract class LoginSignupBaseFragment<VBinding : ViewBinding> : Fragment() {
 			from
 		).putExtras(extras)
 		startActivity(intent)
+	}
+
+	fun loginUser(userData: UserData, isRemOn: Boolean) {
+		viewModel.login(userData, isRemOn)
+		val intent = Intent(context, MainActivity::class.java)
+		intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+		startActivity(intent)
+		requireActivity().finish()
+	}
+
+	fun signUpUser(userData: UserData) {
+		viewModel.signUp(userData)
+		val intent = Intent(context, MainActivity::class.java)
+		intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+		startActivity(intent)
+		requireActivity().finish()
 	}
 
 	open fun setUpViews() {}

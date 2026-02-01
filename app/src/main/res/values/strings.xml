@@ -25,8 +25,8 @@
     <string name="bg_img_desc">Vista de Imagen</string>
     <string name="login_welcome">Bienvenido de nuevo,</string>
     <string name="login_welcome_text">¡Inicia Sesión!</string>
-    <string name="login_mobile_hint">NÚMERO DE MÓVIL</string>
-    <string name="login_mobile_ph">Ingresa número de móvil</string>
+    <string name="login_email_hint">CORREO ELECTRÓNICO</string>
+    <string name="login_email_ph">Ingresa tu correo electrónico</string>
     <string name="login_password_hint">CONTRASEÑA</string>
     <string name="login_password_ph">Ingresa Contraseña</string>
     <string name="login_switch_remember_text">Recuérdame</string>
@@ -38,7 +38,7 @@
     <string name="otp_verify_error_text">¡OTP Incorrecto!</string>
     <string name="otp_message_1">Un paso más…</string>
     <string name="otp_message_2">O T P</string>
-    <string name="login_error_text">Número de Móvil o Contraseña Incorrectos</string>
+    <string name="login_error_text">Correo Electrónico o Contraseña Incorrectos</string>
     <string name="login_signup_text">¿Nuevo Usuario? Regístrate</string>
     <string name="signup_seller_text">¿Deseas vender algún producto?</string>
     <string name="home_add_fab_desc">FAB para añadir producto</string>

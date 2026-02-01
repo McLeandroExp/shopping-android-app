@@ -7,6 +7,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import com.vishalgaur.shoppingapp.EMAIL_ERROR_TEXT
 import com.vishalgaur.shoppingapp.MOB_ERROR_TEXT
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.utils.LogInErrors
@@ -38,7 +39,7 @@ class LoginFragment : LoginSignupBaseFragment<FragmentLoginBinding>() {
 
 		binding.loginErrorTextView.visibility = View.GONE
 
-		binding.loginMobileEditText.onFocusChangeListener = focusChangeListener
+		binding.loginEmailEditText.onFocusChangeListener = focusChangeListener
 		binding.loginPasswordEditText.onFocusChangeListener = focusChangeListener
 
 		binding.loginLoginBtn.setOnClickListener(object : OnClickListener {
@@ -48,11 +49,9 @@ class LoginFragment : LoginSignupBaseFragment<FragmentLoginBinding>() {
 					viewModel.loginErrorStatus.observe(viewLifecycleOwner) {
 						if (it == LogInErrors.NONE) {
 							val isRemOn = binding.loginRemSwitch.isChecked
-							val bundle = bundleOf(
-								"uData" to viewModel.userData.value,
-								"loginRememberMe" to isRemOn
-							)
-							launchOtpActivity(getString(R.string.login_fragment_label), bundle)
+							viewModel.userData.value?.let { userData ->
+								loginUser(userData, isRemOn)
+							}
 						}
 					}
 				}
@@ -67,6 +66,7 @@ class LoginFragment : LoginSignupBaseFragment<FragmentLoginBinding>() {
 			LoginViewErrors.NONE -> setEditTextErrors()
 			LoginViewErrors.ERR_EMPTY -> setErrorText("Fill all details")
 			LoginViewErrors.ERR_MOBILE -> setEditTextErrors(MOB_ERROR_TEXT)
+			LoginViewErrors.ERR_EMAIL -> setEditTextErrors(EMAIL_ERROR_TEXT)
 		}
 	}
 
@@ -77,9 +77,9 @@ class LoginFragment : LoginSignupBaseFragment<FragmentLoginBinding>() {
 		}
 	}
 
-	private fun setEditTextErrors(mobError: String? = null) {
+	private fun setEditTextErrors(emailError: String? = null) {
 		binding.loginErrorTextView.visibility = View.GONE
-		binding.loginMobileEditText.error = mobError
+		binding.loginEmailEditText.error = emailError
 	}
 
 	private fun setUpClickableSignUpText() {
@@ -99,9 +99,9 @@ class LoginFragment : LoginSignupBaseFragment<FragmentLoginBinding>() {
 	}
 
 	private fun onLogin() {
-		val mob = binding.loginMobileEditText.text.toString()
+		val email = binding.loginEmailEditText.text.toString()
 		val pwd = binding.loginPasswordEditText.text.toString()
 
-		viewModel.loginSubmitData(mob, pwd)
+		viewModel.loginSubmitData(email, pwd)
 	}
 }

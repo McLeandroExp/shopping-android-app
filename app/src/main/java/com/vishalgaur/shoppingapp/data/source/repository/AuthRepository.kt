@@ -110,11 +110,11 @@ class AuthRepository(
 		return sErr
 	}
 
-	override suspend fun checkLogin(mobile: String, password: String): UserData? {
-		Log.d(TAG, "on Login: checking mobile and password")
+	override suspend fun checkLogin(email: String, password: String): UserData? {
+		Log.d(TAG, "on Login: checking email and password")
 		var queryResult = mutableListOf<UserData>()
 		try {
-			queryResult = authRemoteDataSource.getUserByMobileAndPassword(mobile, password)
+			queryResult = authRemoteDataSource.getUserByEmailAndPassword(email, password)
 		} catch (e: Exception) {
 			// No Handling
 		}

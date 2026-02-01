@@ -46,6 +46,10 @@ class AuthRemoteDataSource : UserDataSource {
 		usersCollectionRef().whereEqualTo(USERS_MOBILE_FIELD, phoneNumber).get().await()
 			.toObjects(UserData::class.java)[0]
 
+	override suspend fun getUserByEmail(email: String): UserData =
+		usersCollectionRef().whereEqualTo(USERS_EMAIL_FIELD, email).get().await()
+			.toObjects(UserData::class.java)[0]
+
 	override suspend fun getOrdersByUserId(userId: String): Result<List<UserData.OrderItem>?> {
 		val userRef = usersCollectionRef().whereEqualTo(USERS_ID_FIELD, userId).get().await()
 		return if (!userRef.isEmpty) {
@@ -81,6 +85,13 @@ class AuthRemoteDataSource : UserDataSource {
 		password: String
 	): MutableList<UserData> =
 		usersCollectionRef().whereEqualTo(USERS_MOBILE_FIELD, mobile)
+			.whereEqualTo(USERS_PWD_FIELD, password).get().await().toObjects(UserData::class.java)
+
+	override suspend fun getUserByEmailAndPassword(
+		email: String,
+		password: String
+	): MutableList<UserData> =
+		usersCollectionRef().whereEqualTo(USERS_EMAIL_FIELD, email)
 			.whereEqualTo(USERS_PWD_FIELD, password).get().await().toObjects(UserData::class.java)
 
 	override suspend fun likeProduct(productId: String, userId: String) {
@@ -290,6 +301,7 @@ class AuthRemoteDataSource : UserDataSource {
 		private const val USERS_CART_FIELD = "cart"
 		private const val USERS_ORDERS_FIELD = "orders"
 		private const val USERS_MOBILE_FIELD = "mobile"
+		private const val USERS_EMAIL_FIELD = "email"
 		private const val USERS_PWD_FIELD = "password"
 		private const val EMAIL_MOBILE_DOC = "emailAndMobiles"
 		private const val EMAIL_MOBILE_EMAIL_FIELD = "emails"
