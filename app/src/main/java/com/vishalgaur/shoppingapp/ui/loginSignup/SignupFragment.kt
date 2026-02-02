@@ -66,7 +66,12 @@ class SignupFragment : LoginSignupBaseFragment<FragmentSignupBinding>() {
 			}
 		}
 
-		ss.setSpan(clickableSpan, 25, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+		val wordToSpan = "Iniciar Sesión"
+		val start = loginText.indexOf(wordToSpan)
+		val end = start + wordToSpan.length
+		if (start != -1) {
+			ss.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+		}
 		binding.signupLoginTextView.apply {
 			text = ss
 			movementMethod = LinkMovementMethod.getInstance()
