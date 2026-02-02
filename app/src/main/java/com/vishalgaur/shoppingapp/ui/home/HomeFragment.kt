@@ -220,8 +220,10 @@ class HomeFragment : Fragment() {
 	}
 
 	private fun setProductsAdapter(productsList: List<Product>?) {
+		val showOnlyMine = arguments?.getBoolean("showOnlyMine") ?: false
 		val likesList = viewModel.userLikes.value ?: emptyList()
-		productAdapter = ProductAdapter(productsList ?: emptyList(), likesList, requireContext())
+		productAdapter =
+			ProductAdapter(productsList ?: emptyList(), likesList, requireContext(), showOnlyMine)
 		productAdapter.onClickListener = object : ProductAdapter.OnClickListener {
 			override fun onClick(productData: Product) {
 				findNavController().navigate(

@@ -17,7 +17,12 @@ import com.vishalgaur.shoppingapp.databinding.LayoutHomeAdBinding
 import com.vishalgaur.shoppingapp.databinding.ProductsListItemBinding
 import com.vishalgaur.shoppingapp.getOfferPercentage
 
-class ProductAdapter(proList: List<Any>, userLikes: List<String>, private val context: Context) :
+class ProductAdapter(
+	proList: List<Any>,
+	userLikes: List<String>,
+	private val context: Context,
+	private val isMyProducts: Boolean = false
+) :
 	RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	var data = proList
@@ -66,12 +71,19 @@ class ProductAdapter(proList: List<Any>, userLikes: List<String>, private val co
 			if (sessionManager.isUserSeller()) {
 				proLikeButton.visibility = View.GONE
 				proCartButton.visibility = View.GONE
-				proEditBtn.setOnClickListener {
-					onClickListener.onEditClick(productData.productId)
-				}
+				if (isMyProducts) {
+					proEditBtn.visibility = View.VISIBLE
+					proDeleteButton.visibility = View.VISIBLE
+					proEditBtn.setOnClickListener {
+						onClickListener.onEditClick(productData.productId)
+					}
 
-				proDeleteButton.setOnClickListener {
-					onClickListener.onDeleteClick(productData)
+					proDeleteButton.setOnClickListener {
+						onClickListener.onDeleteClick(productData)
+					}
+				} else {
+					proEditBtn.visibility = View.GONE
+					proDeleteButton.visibility = View.GONE
 				}
 			} else {
 				proEditBtn.visibility = View.GONE

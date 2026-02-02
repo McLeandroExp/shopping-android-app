@@ -178,7 +178,13 @@
             app:argType="boolean"
             android:defaultValue="true" />
         <action
-            android:id="@+id/action_myProducts_to_productDetails"
+            android:id="@+id/action_seeProduct"
             app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_goto_addProduct"
+            app:destination="@id/addEditProductFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 </navigation>
