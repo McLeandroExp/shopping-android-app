@@ -37,6 +37,18 @@ class OrderSuccessFragment : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 
 		binding.backToHomeBtn.setOnClickListener {
+			countDownTimer.cancel()
+			safeNavigateToHome()
+		}
+	}
+
+	override fun onDestroyView() {
+		super.onDestroyView()
+		countDownTimer.cancel()
+	}
+
+	private fun safeNavigateToHome() {
+		if (findNavController().currentDestination?.id == R.id.orderSuccessFragment) {
 			findNavController().navigate(R.id.action_orderSuccessFragment_to_homeFragment)
 		}
 	}
@@ -66,7 +78,7 @@ class OrderSuccessFragment : Fragment() {
 		}
 
 		override fun onFinish() {
-			findNavController().navigate(R.id.action_orderSuccessFragment_to_homeFragment)
+			safeNavigateToHome()
 		}
 	}
 }
