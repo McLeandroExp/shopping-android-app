@@ -278,13 +278,7 @@ class AddEditProductFragment : Fragment() {
 				chip.id = View.generateViewId()
 				chip.tag = k
 
-				chip.chipStrokeColor = ColorStateList.valueOf(Color.BLACK)
-				chip.chipStrokeWidth = TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP,
-					1F,
-					context.resources.displayMetrics
-				)
-				chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor(v))
+				chip.text = k
 				chip.isCheckable = true
 
 				if (selectedList?.contains(k) == true) {

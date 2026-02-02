@@ -41,7 +41,7 @@ class AuthRepository(
 	override suspend fun refreshData() {
 		Log.d(TAG, "refreshing userdata")
 		if (sessionManager.isLoggedIn()) {
-			updateUserInLocalSource(sessionManager.getPhoneNumber())
+			updateUserInLocalSource(sessionManager.getUserIdFromSession())
 		} else {
 			sessionManager.logoutFromSession()
 			deleteUserFromLocalSource()
@@ -171,16 +171,16 @@ class AuthRepository(
 		userLocalDataSource.clearUser()
 	}
 
-	private suspend fun updateUserInLocalSource(phoneNumber: String?) {
+	private suspend fun updateUserInLocalSource(userId: String?) {
 		coroutineScope {
 			launch {
-				if (phoneNumber != null) {
-					val getUser = userLocalDataSource.getUserByMobile(phoneNumber)
-					if (getUser == null) {
+				if (userId != null) {
+					val getUserRes = userLocalDataSource.getUserById(userId)
+					if (getUserRes is Error || (getUserRes is Success && getUserRes.data == null)) {
 						userLocalDataSource.clearUser()
-						val uData = authRemoteDataSource.getUserByMobile(phoneNumber)
-						if (uData != null) {
-							userLocalDataSource.addUser(uData)
+						val uDataRes = authRemoteDataSource.getUserById(userId)
+						if (uDataRes is Success && uDataRes.data != null) {
+							userLocalDataSource.addUser(uDataRes.data!!)
 						}
 					}
 				}
@@ -190,11 +190,11 @@ class AuthRepository(
 
 	override suspend fun hardRefreshUserData() {
 		userLocalDataSource.clearUser()
-		val mobile = sessionManager.getPhoneNumber()
-		if (mobile != null) {
-			val uData = authRemoteDataSource.getUserByMobile(mobile)
-			if (uData != null) {
-				userLocalDataSource.addUser(uData)
+		val userId = sessionManager.getUserIdFromSession()
+		if (userId != null) {
+			val uDataRes = authRemoteDataSource.getUserById(userId)
+			if (uDataRes is Success && uDataRes.data != null) {
+				userLocalDataSource.addUser(uDataRes.data!!)
 			}
 		}
 	}

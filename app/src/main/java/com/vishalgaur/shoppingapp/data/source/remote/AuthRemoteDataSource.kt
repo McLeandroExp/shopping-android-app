@@ -42,13 +42,15 @@ class AuthRemoteDataSource : UserDataSource {
 			}
 	}
 
-	override suspend fun getUserByMobile(phoneNumber: String): UserData =
-		usersCollectionRef().whereEqualTo(USERS_MOBILE_FIELD, phoneNumber).get().await()
-			.toObjects(UserData::class.java)[0]
+	override suspend fun getUserByMobile(phoneNumber: String): UserData? {
+		val res = usersCollectionRef().whereEqualTo(USERS_MOBILE_FIELD, phoneNumber).get().await()
+		return if (!res.isEmpty) res.toObjects(UserData::class.java)[0] else null
+	}
 
-	override suspend fun getUserByEmail(email: String): UserData =
-		usersCollectionRef().whereEqualTo(USERS_EMAIL_FIELD, email).get().await()
-			.toObjects(UserData::class.java)[0]
+	override suspend fun getUserByEmail(email: String): UserData? {
+		val res = usersCollectionRef().whereEqualTo(USERS_EMAIL_FIELD, email).get().await()
+		return if (!res.isEmpty) res.toObjects(UserData::class.java)[0] else null
+	}
 
 	override suspend fun getOrdersByUserId(userId: String): Result<List<UserData.OrderItem>?> {
 		val userRef = usersCollectionRef().whereEqualTo(USERS_ID_FIELD, userId).get().await()

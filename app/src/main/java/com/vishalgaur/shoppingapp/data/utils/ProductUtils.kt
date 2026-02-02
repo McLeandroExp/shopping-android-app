@@ -11,11 +11,12 @@ val ProductVariants = mapOf(
 )
 
 val EquipmentTypes = mapOf(
-	"Equipo de Diagnóstico" to "#2196F3",
-	"Equipo de Soporte Vital" to "#F44336",
-	"De Monitoreo" to "#4CAF50",
-	"Terapéutico" to "#FFEB3B",
-	"De Laboratorio" to "#9E9E9E"
+	"diagnostico" to "diagnostico",
+	"soporte vital" to "soporte vital",
+	"monitoreo" to "monitoreo",
+	"terapeutico" to "terapeutico",
+	"laboratorio" to "laboratorio",
+	"otro" to "otro"
 )
 
 val ProductCategories = arrayOf("Medicamentos", "Equipos Médicos", "Cuidado Personal", "Suplementos")

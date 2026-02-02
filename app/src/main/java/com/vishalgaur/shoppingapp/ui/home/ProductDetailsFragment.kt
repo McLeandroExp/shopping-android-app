@@ -275,7 +275,7 @@ class ProductDetailsFragment : Fragment() {
 					val radioButton = RadioButton(context)
 					radioButton.id = View.generateViewId()
 					radioButton.tag = k
-					setupRadioButton(radioButton, k, v)
+					setupRadioButton(radioButton, k)
 					radioButton.setOnCheckedChangeListener { buttonView, isChecked ->
 						if (isChecked) selectedColor = buttonView.tag.toString()
 					}
