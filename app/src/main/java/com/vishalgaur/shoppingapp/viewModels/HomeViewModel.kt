@@ -164,7 +164,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 			viewModelScope.launch {
 				val itemId = UUID.randomUUID().toString()
 				val newItem = UserData.CartItem(
-					itemId, product.productId, product.owner, 1, null, null
+					itemId, product.productId, product.owner, 1, null
 				)
 				val res = authRepository.insertCartItemByUserId(newItem, currentUser!!)
 				if (res is Success) {

@@ -189,7 +189,7 @@ class ProductDetailsFragment : Fragment() {
 	}
 
 	private fun onAddToCart() {
-		viewModel.addToCart(selectedSize, selectedColor)
+		viewModel.addToCart(null, selectedColor)
 	}
 
 	private fun navigateToCartFragment() {
@@ -227,51 +227,21 @@ class ProductDetailsFragment : Fragment() {
 		binding.proDetailsColorsRadioGroup.visibility = View.GONE
 
 		when (category) {
-			"Medicamentos", "Suplementos" -> {
-				binding.proDetailsSelectSizeLabel.text = getString(R.string.pro_details_select_size_lable_text)
-				setProductVariantsButtons()
-			}
-			"Equipos Médicos" -> {
-				binding.proDetailsSelectSizeLabel.visibility = View.GONE
-				binding.proDetailsSizesRadioGroup.visibility = View.GONE
-				
+			"Medicamentos", "Suplementos", "Equipos Médicos", "Cuidado Personal" -> {
 				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
 				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
-				binding.proDetailsSelectColorLabel.text = "Tipo de Equipo"
+				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_select_color_label_text)
 				setEquipmentTypesButtons()
-			}
-			"Cuidado Personal" -> {
-				binding.proDetailsSelectSizeLabel.visibility = View.GONE
-				binding.proDetailsSizesRadioGroup.visibility = View.GONE
 			}
 		}
 	}
 
-	private fun setProductVariantsButtons() {
-		binding.proDetailsSizesRadioGroup.apply {
-			removeAllViews()
-			for ((k, v) in ProductVariants) {
-				if (viewModel.productData.value?.availableSizes?.contains(v) == true) {
-					val radioButton = RadioButton(context)
-					radioButton.id = View.generateViewId()
-					radioButton.tag = v
-					// ... same logic for layout params and styling
-					setupRadioButton(radioButton, k)
-					radioButton.setOnCheckedChangeListener { buttonView, isChecked ->
-						if (isChecked) selectedSize = buttonView.tag.toString()
-					}
-					addView(radioButton)
-				}
-			}
-			invalidate()
-		}
-	}
 
 	private fun setEquipmentTypesButtons() {
 		binding.proDetailsColorsRadioGroup.apply {
 			removeAllViews()
 			for ((k, v) in EquipmentTypes) {
-				if (viewModel.productData.value?.availableColors?.contains(k) == true) {
+				if (viewModel.productData.value?.availableTypes?.contains(k) == true) {
 					val radioButton = RadioButton(context)
 					radioButton.id = View.generateViewId()
 					radioButton.tag = k

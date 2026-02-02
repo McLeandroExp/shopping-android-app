@@ -98,12 +98,10 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 		colors: List<String>,
 		imgList: List<Uri>,
 	) {
-		val isSizesRequired = _selectedCategory.value in listOf("Medicamentos", "Suplementos")
-		val isColorsRequired = _selectedCategory.value == "Equipos Médicos"
+		val isTypesRequired = _selectedCategory.value == "Equipos Médicos"
 
 		val isInvalid = name.isBlank() || price == null || mrp == null || desc.isBlank() || imgList.isNullOrEmpty() ||
-				(isSizesRequired && sizes.isEmpty()) || 
-				(isColorsRequired && colors.isEmpty())
+				(isTypesRequired && colors.isEmpty())
 
 		if (isInvalid) {
 			_errorStatus.value = AddProductViewErrors.EMPTY
@@ -123,7 +121,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 						_selectedCategory.value!!,
 						price!!,
 						mrp!!,
-						sizes,
 						colors,
 						emptyList(),
 						0.0

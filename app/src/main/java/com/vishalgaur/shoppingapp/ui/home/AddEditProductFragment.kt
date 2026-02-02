@@ -150,40 +150,29 @@ class AddEditProductFragment : Fragment() {
 			val adapter = AddProductImagesAdapter(requireContext(), imgList)
 			binding.addProImagesRv.adapter = adapter
 
-			updateCategorySpecificViews(product.category, product.availableSizes, product.availableColors)
+			updateCategorySpecificViews(product.category, product.availableTypes)
 
 			binding.addProBtn.setText(R.string.edit_product_btn_text)
 		}
 	}
 
-	private fun updateCategorySpecificViews(category: String, selectedVariants: List<String> = emptyList(), selectedTypes: List<String> = emptyList()) {
+	private fun updateCategorySpecificViews(category: String, selectedTypes: List<String> = emptyList()) {
 		// Global: Hide MRP and Presentation (colors) label/chips by default
 		binding.mrpOutlinedTextField.visibility = View.GONE
 		binding.addProMrpLabel.visibility = View.GONE
 		
 		// Reset visibility
-		binding.addProSizesLabel.visibility = View.VISIBLE
-		binding.addProSizeChipGroup.visibility = View.VISIBLE
+		binding.addProSizesLabel.visibility = View.GONE
+		binding.addProSizeChipGroup.visibility = View.GONE
 		binding.addProColorLabel.visibility = View.GONE
 		binding.addProColorChipGroup.visibility = View.GONE
 
 		when (category) {
-			"Medicamentos", "Suplementos" -> {
-				binding.addProSizesLabel.text = getString(R.string.add_pro_sizes_label_text)
-				setProductVariantsChips(selectedVariants)
-			}
-			"Equipos Médicos" -> {
-				binding.addProSizesLabel.visibility = View.GONE
-				binding.addProSizeChipGroup.visibility = View.GONE
-				
+			"Medicamentos", "Suplementos", "Equipos Médicos", "Cuidado Personal" -> {
 				binding.addProColorLabel.visibility = View.VISIBLE
 				binding.addProColorChipGroup.visibility = View.VISIBLE
-				binding.addProColorLabel.text = "Tipo de Equipo"
+				binding.addProColorLabel.text = getString(R.string.add_pro_color_label_text)
 				setEquipmentTypesChips(selectedTypes)
-			}
-			"Cuidado Personal" -> {
-				binding.addProSizesLabel.visibility = View.GONE
-				binding.addProSizeChipGroup.visibility = View.GONE
 			}
 		}
 	}
@@ -233,42 +222,13 @@ class AddEditProductFragment : Fragment() {
 		val desc = binding.proDescEditText.text.toString()
 		Log.d(
 			TAG,
-			"onAddProduct: Add product initiated, $name, $price, $mrp, $desc, $sizeList, $colorsList, $imgList"
+			"onAddProduct: Add product initiated, $name, $price, $mrp, $desc, $colorsList, $imgList"
 		)
 		viewModel.submitProduct(
-			name, price, mrp, desc, sizeList.toList(), colorsList.toList(), imgList
+			name, price, mrp, desc, emptyList(), colorsList.toList(), imgList
 		)
 	}
 
-	private fun setProductVariantsChips(selectedList: List<String>? = emptyList()) {
-		binding.addProSizeChipGroup.apply {
-			removeAllViews()
-			for ((k, v) in ProductVariants) {
-				val chip = Chip(context)
-				chip.id = View.generateViewId()
-				chip.tag = v
-
-				chip.text = k
-				chip.isCheckable = true
-
-				if (selectedList?.contains(v) == true) {
-					chip.isChecked = true
-					sizeList.add(chip.tag.toString())
-				}
-
-				chip.setOnCheckedChangeListener { buttonView, isChecked ->
-					val tag = buttonView.tag.toString()
-					if (!isChecked) {
-						sizeList.remove(tag)
-					} else {
-						sizeList.add(tag)
-					}
-				}
-				addView(chip)
-			}
-			invalidate()
-		}
-	}
 
 	private fun setEquipmentTypesChips(selectedList: List<String>? = emptyList()) {
 		binding.addProColorChipGroup.apply {

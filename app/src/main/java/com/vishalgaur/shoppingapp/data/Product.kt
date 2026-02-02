@@ -16,8 +16,7 @@ data class Product @JvmOverloads constructor(
 	var category: String = "",
 	var price: Double = 0.0,
 	var mrp: Double = 0.0,
-	var availableSizes: List<String> = ArrayList(),
-	var availableColors: List<String> = ArrayList(),
+	var availableTypes: List<String> = ArrayList(),
 	var images: List<String> = ArrayList(),
 	var rating: Double = 0.0
 ) : Parcelable {
@@ -30,8 +29,7 @@ data class Product @JvmOverloads constructor(
 			"category" to category,
 			"price" to price,
 			"mrp" to mrp,
-			"availableSizes" to availableSizes,
-			"availableColors" to availableColors,
+			"tipo" to availableTypes,
 			"images" to images,
 			"rating" to rating
 		)
