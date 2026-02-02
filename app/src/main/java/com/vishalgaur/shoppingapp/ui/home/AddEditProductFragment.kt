@@ -19,6 +19,7 @@ import com.google.android.material.chip.Chip
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.utils.AddProductErrors
 import com.vishalgaur.shoppingapp.data.utils.EquipmentTypes
+import com.vishalgaur.shoppingapp.data.utils.PersonalCareTypes
 import com.vishalgaur.shoppingapp.data.utils.ProductVariants
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentAddEditProductBinding
@@ -168,11 +169,23 @@ class AddEditProductFragment : Fragment() {
 		binding.addProColorChipGroup.visibility = View.GONE
 
 		when (category) {
-			"Medicamentos", "Suplementos", "Equipos Médicos", "Cuidado Personal" -> {
+			"Medicamentos", "Suplementos" -> {
 				binding.addProColorLabel.visibility = View.VISIBLE
 				binding.addProColorChipGroup.visibility = View.VISIBLE
-				binding.addProColorLabel.text = getString(R.string.add_pro_color_label_text)
-				setEquipmentTypesChips(selectedTypes)
+				binding.addProColorLabel.text = getString(R.string.add_pro_doses_label_text)
+				setCategorySpecificChips(ProductVariants, selectedTypes)
+			}
+			"Equipos Médicos" -> {
+				binding.addProColorLabel.visibility = View.VISIBLE
+				binding.addProColorChipGroup.visibility = View.VISIBLE
+				binding.addProColorLabel.text = getString(R.string.add_pro_type_label_text)
+				setCategorySpecificChips(EquipmentTypes, selectedTypes)
+			}
+			"Cuidado Personal" -> {
+				binding.addProColorLabel.visibility = View.VISIBLE
+				binding.addProColorChipGroup.visibility = View.VISIBLE
+				binding.addProColorLabel.text = getString(R.string.add_pro_type_label_text)
+				setCategorySpecificChips(PersonalCareTypes, selectedTypes)
 			}
 		}
 	}
@@ -230,10 +243,12 @@ class AddEditProductFragment : Fragment() {
 	}
 
 
-	private fun setEquipmentTypesChips(selectedList: List<String>? = emptyList()) {
+	private fun setCategorySpecificChips(optionsMap: Map<String, String>, selectedList: List<String>? = emptyList()) {
 		binding.addProColorChipGroup.apply {
 			removeAllViews()
-			for ((k, v) in EquipmentTypes) {
+			isSingleSelection = true
+			isSelectionRequired = true
+			for ((k, v) in optionsMap) {
 				val chip = Chip(context)
 				chip.id = View.generateViewId()
 				chip.tag = k
@@ -243,15 +258,17 @@ class AddEditProductFragment : Fragment() {
 
 				if (selectedList?.contains(k) == true) {
 					chip.isChecked = true
+					colorsList.clear()
 					colorsList.add(chip.tag.toString())
 				}
 
 				chip.setOnCheckedChangeListener { buttonView, isChecked ->
 					val tag = buttonView.tag.toString()
-					if (!isChecked) {
-						colorsList.remove(tag)
-					} else {
+					if (isChecked) {
+						colorsList.clear()
 						colorsList.add(tag)
+					} else {
+						colorsList.remove(tag)
 					}
 				}
 				addView(chip)

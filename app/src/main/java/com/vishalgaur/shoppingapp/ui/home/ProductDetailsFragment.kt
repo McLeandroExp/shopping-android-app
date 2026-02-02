@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.utils.AddObjectStatus
 import com.vishalgaur.shoppingapp.data.utils.EquipmentTypes
+import com.vishalgaur.shoppingapp.data.utils.PersonalCareTypes
 import com.vishalgaur.shoppingapp.data.utils.ProductVariants
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentProductDetailsBinding
@@ -185,6 +186,7 @@ class ProductDetailsFragment : Fragment() {
 			viewModel.productData.value?.price.toString()
 		)
 		updateCategorySpecificViews(viewModel.productData.value?.category ?: "")
+		binding.proDetailsSpecificationsLabel.text = getString(R.string.pro_details_desc_label_text)
 		binding.proDetailsSpecificsText.text = viewModel.productData.value?.description ?: ""
 	}
 
@@ -220,27 +222,44 @@ class ProductDetailsFragment : Fragment() {
 	}
 
 	private fun updateCategorySpecificViews(category: String) {
-		// Reset visibility
-		binding.proDetailsSelectSizeLabel.visibility = View.VISIBLE
-		binding.proDetailsSizesRadioGroup.visibility = View.VISIBLE
+		// Default: Hide all specific views
+		binding.proDetailsSelectSizeLabel.visibility = View.GONE
+		binding.proDetailsSizesRadioGroup.visibility = View.GONE
 		binding.proDetailsSelectColorLabel.visibility = View.GONE
 		binding.proDetailsColorsRadioGroup.visibility = View.GONE
 
 		when (category) {
-			"Medicamentos", "Suplementos", "Equipos Médicos", "Cuidado Personal" -> {
+			"Medicamentos", "Suplementos" -> {
 				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
 				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
-				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_select_color_label_text)
-				setEquipmentTypesButtons()
+				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
+				setCategorySpecificButtons(ProductVariants)
+			}
+			"Equipos Médicos" -> {
+				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
+				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
+				setCategorySpecificButtons(EquipmentTypes)
+			}
+			"Cuidado Personal" -> {
+				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
+				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
+				setCategorySpecificButtons(PersonalCareTypes)
+			}
+			else -> {
+				// Show original size labels for other categories if any
+				binding.proDetailsSelectSizeLabel.visibility = View.VISIBLE
+				binding.proDetailsSizesRadioGroup.visibility = View.VISIBLE
 			}
 		}
 	}
 
 
-	private fun setEquipmentTypesButtons() {
+	private fun setCategorySpecificButtons(optionsMap: Map<String, String>) {
 		binding.proDetailsColorsRadioGroup.apply {
 			removeAllViews()
-			for ((k, v) in EquipmentTypes) {
+			for ((k, v) in optionsMap) {
 				if (viewModel.productData.value?.availableTypes?.contains(k) == true) {
 					val radioButton = RadioButton(context)
 					radioButton.id = View.generateViewId()
@@ -266,8 +285,8 @@ class ProductDetailsFragment : Fragment() {
 			radioButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor(colorHex))
 			radioButton.setButtonDrawable(R.color.transparent)
 		} else {
-			radioButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.radio_selector)
-			radioButton.setButtonDrawable(R.color.transparent)
+			radioButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.variant_selector)
+			radioButton.setButtonDrawable(null)
 			radioButton.text = text
 			radioButton.setTextColor(Color.BLACK)
 			radioButton.setTypeface(null, Typeface.BOLD)

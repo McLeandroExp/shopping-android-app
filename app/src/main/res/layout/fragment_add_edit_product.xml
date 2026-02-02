@@ -274,7 +274,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/add_pro_color_label_text"
+                android:text="@string/add_pro_type_label_text"
                 android:textAppearance="@style/TextAppearance.MyTheme.Headline6"
                 android:textColor="@color/black"
                 android:textSize="16sp"

@@ -3,6 +3,7 @@ package com.vishalgaur.shoppingapp.data
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -16,6 +17,8 @@ data class Product @JvmOverloads constructor(
 	var category: String = "",
 	var price: Double = 0.0,
 	var mrp: Double = 0.0,
+	@get:PropertyName("tipo")
+	@set:PropertyName("tipo")
 	var availableTypes: List<String> = ArrayList(),
 	var images: List<String> = ArrayList(),
 	var rating: Double = 0.0
