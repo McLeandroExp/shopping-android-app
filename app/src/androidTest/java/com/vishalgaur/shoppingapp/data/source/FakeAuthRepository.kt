@@ -50,14 +50,14 @@ class FakeAuthRepository(private val sessionManager: ShoppingAppSessionManager) 
 		email: String,
 		mobile: String,
 		context: Context
-	): SignUpErrors {
+	): SignUpErrors? {
 		// no implementation
 		return SignUpErrors.NONE
 	}
 
-	override suspend fun checkLogin(mobile: String, password: String): UserData? {
+	override suspend fun checkLogin(email: String, password: String): UserData? {
 		uData?.let {
-			if (it.mobile == mobile && it.password == password) {
+			if (it.email == email && it.password == password) {
 				return it
 			}
 		}
@@ -193,6 +193,46 @@ class FakeAuthRepository(private val sessionManager: ShoppingAppSessionManager) 
 				}
 				it.cart = cart
 				return Result.Success(true)
+			}
+		}
+		return Result.Error(Exception("User Not Found"))
+	}
+
+	override suspend fun placeOrder(newOrder: UserData.OrderItem, userId: String): Result<Boolean> {
+		uData?.let {
+			if (it.userId == userId) {
+				val orders = it.orders.toMutableList()
+				orders.add(newOrder)
+				it.orders = orders
+				return Result.Success(true)
+			}
+		}
+		return Result.Error(Exception("User Not Found"))
+	}
+
+	override suspend fun setStatusOfOrder(
+		orderId: String,
+		userId: String,
+		status: String
+	): Result<Boolean> {
+		uData?.let {
+			if (it.userId == userId) {
+				val orders = it.orders.toMutableList()
+				val pos = it.orders.indexOfFirst { order -> order.orderId == orderId }
+				if (pos >= 0) {
+					orders[pos].status = status
+				}
+				it.orders = orders
+				return Result.Success(true)
+			}
+		}
+		return Result.Error(Exception("User Not Found"))
+	}
+
+	override suspend fun getOrdersByUserId(userId: String): Result<List<UserData.OrderItem>?> {
+		uData?.let {
+			if (it.userId == userId) {
+				return Result.Success(it.orders)
 			}
 		}
 		return Result.Error(Exception("User Not Found"))

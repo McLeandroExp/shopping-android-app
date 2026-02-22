@@ -29,8 +29,7 @@ class AppDatabaseTest {
 		"Shoes",
 		250.0,
 		300.0,
-		listOf(5, 6, 7, 8),
-		listOf("Red", "Blue"),
+		listOf("5", "6", "7", "8"),
 		listOf("http://image-ref-uri/shoe-101-01.jpg", "http://image-ref-uri/-shoe-101-02.jpg"),
 		2.5
 	)
@@ -42,8 +41,7 @@ class AppDatabaseTest {
 		"Slippers",
 		50.0,
 		80.0,
-		listOf(6, 7, 8),
-		listOf("Black", "Blue"),
+		listOf("6", "7", "8"),
 		listOf(
 			"http://image-ref-uri/-slipper-101-01.jpg",
 			"http://image-ref-uri/-slipper-101-02.jpg"

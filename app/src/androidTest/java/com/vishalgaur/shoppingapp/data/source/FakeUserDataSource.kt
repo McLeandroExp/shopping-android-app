@@ -23,7 +23,7 @@ class FakeUserDataSource(private var uData: UserData?) : UserDataSource {
 		return Error(Exception("User Not Found"))
 	}
 
-	override suspend fun getEmailsAndMobiles(): EmailMobileData {
+	override suspend fun getEmailsAndMobiles(): EmailMobileData? {
 		return emailMobileData
 	}
 
@@ -143,6 +143,38 @@ class FakeUserDataSource(private var uData: UserData?) : UserDataSource {
 				data.cart = cart
 			}
 		}
+	}
+
+	override suspend fun placeOrder(newOrder: UserData.OrderItem, userId: String) {
+		uData?.let {
+			if (it.userId == userId) {
+				val orders = it.orders.toMutableList()
+				orders.add(newOrder)
+				it.orders = orders
+			}
+		}
+	}
+
+	override suspend fun setStatusOfOrderByUserId(orderId: String, userId: String, status: String) {
+		uData?.let {
+			if (it.userId == userId) {
+				val orders = it.orders.toMutableList()
+				val pos = it.orders.indexOfFirst { it.orderId == orderId }
+				if (pos >= 0) {
+					orders[pos].status = status
+				}
+				it.orders = orders
+			}
+		}
+	}
+
+	override suspend fun getOrdersByUserId(userId: String): Result<List<UserData.OrderItem>?> {
+		uData?.let {
+			if (it.userId == userId) {
+				return Success(it.orders)
+			}
+		}
+		return Error(Exception("User Not Found"))
 	}
 
 	override suspend fun getAddressesByUserId(userId: String): Result<List<UserData.Address>?> {
