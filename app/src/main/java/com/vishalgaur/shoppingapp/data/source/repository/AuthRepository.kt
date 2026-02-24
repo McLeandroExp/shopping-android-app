@@ -25,7 +25,8 @@ import kotlinx.coroutines.supervisorScope
 class AuthRepository(
 	private val userLocalDataSource: UserDataSource,
 	private val authRemoteDataSource: UserDataSource,
-	private var sessionManager: ShoppingAppSessionManager
+	private var sessionManager: ShoppingAppSessionManager,
+	private val productsRepository: ProductsRepoInterface
 ) : AuthRepoInterface {
 
 	private var firebaseAuth: FirebaseAuth = Firebase.auth
@@ -50,12 +51,14 @@ class AuthRepository(
 
 	override suspend fun signUp(userData: UserData) {
 		val isSeller = userData.userType == UserType.SELLER.name
+		val isAdmin = userData.userType == UserType.ADMIN.name
 		sessionManager.createLoginSession(
 			userData.userId,
 			userData.name,
 			userData.mobile,
 			false,
-			isSeller
+			isSeller,
+			isAdmin
 		)
 		Log.d(TAG, "on SignUp: Updating user in Local Source")
 		userLocalDataSource.addUser(userData)
@@ -66,12 +69,14 @@ class AuthRepository(
 
 	override fun login(userData: UserData, rememberMe: Boolean) {
 		val isSeller = userData.userType == UserType.SELLER.name
+		val isAdmin = userData.userType == UserType.ADMIN.name
 		sessionManager.createLoginSession(
 			userData.userId,
 			userData.name,
 			userData.mobile,
 			rememberMe,
-			isSeller
+			isSeller,
+			isAdmin
 		)
 	}
 
@@ -458,6 +463,35 @@ class AuthRepository(
 
 	override suspend fun getUserData(userId: String): Result<UserData?> {
 		return userLocalDataSource.getUserById(userId)
+	}
+
+	override suspend fun getAllUsers(): Result<List<UserData>> {
+		return authRemoteDataSource.getAllUsers()
+	}
+
+	override suspend fun deleteUser(userId: String): Result<Boolean> {
+		return try {
+			val userRes = authRemoteDataSource.getUserById(userId)
+			if (userRes is Success && userRes.data != null) {
+				val user = userRes.data!!
+				// Cascade delete products if user is a seller
+				if (user.userType == UserType.SELLER.name) {
+					Log.d(TAG, "Deleting products for seller: $userId")
+					val productsRes = productsRepository.getAllProductsByOwner(userId)
+					if (productsRes is Success) {
+						productsRes.data.forEach { product ->
+							productsRepository.deleteProductById(product.productId)
+						}
+					}
+				}
+				authRemoteDataSource.deleteUser(userId)
+				Success(true)
+			} else {
+				Error(Exception("User not found"))
+			}
+		} catch (e: Exception) {
+			Error(e)
+		}
 	}
 
 }

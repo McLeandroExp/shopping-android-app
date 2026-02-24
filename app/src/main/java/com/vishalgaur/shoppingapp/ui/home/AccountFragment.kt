@@ -51,6 +51,19 @@ class AccountFragment : Fragment() {
 			Log.d(TAG, "Sign Out Selected")
 			showSignOutDialog()
 		}
+		
+		val sessionManager = com.vishalgaur.shoppingapp.data.ShoppingAppSessionManager(requireContext())
+		if (sessionManager.isUserAdmin()) {
+			binding.accountAdminProductsTv.visibility = View.VISIBLE
+			binding.accountAdminUsersTv.visibility = View.VISIBLE
+			
+			binding.accountAdminProductsTv.setOnClickListener {
+				findNavController().navigate(R.id.adminProductsFragment)
+			}
+			binding.accountAdminUsersTv.setOnClickListener {
+				findNavController().navigate(R.id.adminUsersFragment)
+			}
+		}
 	}
 
 	private fun showSignOutDialog() {

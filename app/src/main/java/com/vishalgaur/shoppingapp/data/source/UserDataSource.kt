@@ -64,4 +64,10 @@ interface UserDataSource {
 	suspend fun getAddressesByUserId(userId: String): Result<List<UserData.Address>?>
 
 	suspend fun getLikesByUserId(userId: String): Result<List<String>?>
+
+	suspend fun getAllUsers(): Result<List<UserData>> {
+		return Result.Success(emptyList())
+	}
+
+	suspend fun deleteUser(userId: String) {}
 }

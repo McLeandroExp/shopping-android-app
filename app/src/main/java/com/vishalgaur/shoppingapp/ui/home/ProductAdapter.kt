@@ -22,7 +22,8 @@ class ProductAdapter(
 	proList: List<Any>,
 	userLikes: List<String>,
 	private val context: Context,
-	private val isMyProducts: Boolean = false
+	private val isMyProducts: Boolean = false,
+	private val isAdminManagement: Boolean = false
 ) :
 	RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -69,16 +70,27 @@ class ProductAdapter(
 
 			proLikeButton.isChecked = likesList.contains(productData.productId)
 
-			if (sessionManager.isUserSeller()) {
+			if (sessionManager.isUserSeller() || sessionManager.isUserAdmin()) {
 				proLikeButton.visibility = View.GONE
 				proCartButton.visibility = View.GONE
-				if (isMyProducts) {
+				
+				if (sessionManager.isUserAdmin()) {
+					if (isAdminManagement) {
+						proEditBtn.visibility = View.GONE
+						proDeleteButton.visibility = View.VISIBLE
+						proDeleteButton.setOnClickListener {
+							onClickListener.onDeleteClick(productData)
+						}
+					} else {
+						proEditBtn.visibility = View.GONE
+						proDeleteButton.visibility = View.GONE
+					}
+				} else if (isMyProducts) {
 					proEditBtn.visibility = View.VISIBLE
 					proDeleteButton.visibility = View.VISIBLE
 					proEditBtn.setOnClickListener {
 						onClickListener.onEditClick(productData.productId)
 					}
-
 					proDeleteButton.setOnClickListener {
 						onClickListener.onDeleteClick(productData)
 					}

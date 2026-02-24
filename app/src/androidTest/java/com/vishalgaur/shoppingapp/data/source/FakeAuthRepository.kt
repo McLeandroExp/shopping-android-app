@@ -26,23 +26,29 @@ class FakeAuthRepository(private val sessionManager: ShoppingAppSessionManager) 
 
 	override suspend fun signUp(userData: UserData) {
 		uData = userData
+		val isSeller = userData.userType == UserType.SELLER.name
+		val isAdmin = userData.userType == UserType.ADMIN.name
 		sessionManager.createLoginSession(
 			userData.userId,
 			userData.name,
 			userData.mobile,
 			false,
-			userData.userType == UserType.SELLER.name
+			isSeller,
+			isAdmin
 		)
 	}
 
 	override fun login(userData: UserData, rememberMe: Boolean) {
 		uData = userData
+		val isSeller = userData.userType == UserType.SELLER.name
+		val isAdmin = userData.userType == UserType.ADMIN.name
 		sessionManager.createLoginSession(
 			userData.userId,
 			userData.name,
 			userData.mobile,
 			rememberMe,
-			userData.userType == UserType.SELLER.name
+			isSeller,
+			isAdmin
 		)
 	}
 
@@ -261,6 +267,18 @@ class FakeAuthRepository(private val sessionManager: ShoppingAppSessionManager) 
 			if (it.userId == userId) {
 				return Result.Success(it)
 			}
+		}
+		return Result.Error(Exception("User Not Found"))
+	}
+
+	override suspend fun getAllUsers(): Result<List<UserData>> {
+		return uData?.let { Result.Success(listOf(it)) } ?: Result.Success(emptyList())
+	}
+
+	override suspend fun deleteUser(userId: String): Result<Boolean> {
+		if (uData?.userId == userId) {
+			uData = null
+			return Result.Success(true)
 		}
 		return Result.Error(Exception("User Not Found"))
 	}

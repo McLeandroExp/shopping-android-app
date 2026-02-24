@@ -64,6 +64,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	private var _userLikes = MutableLiveData<List<String>>()
 	val userLikes: LiveData<List<String>> get() = _userLikes
 
+	private var _allUsers = MutableLiveData<List<UserData>>()
+	val allUsers: LiveData<List<UserData>> get() = _allUsers
+
 	private var _filterCategory = MutableLiveData("Todos")
 	val filterCategory: LiveData<String> get() = _filterCategory
 
@@ -415,4 +418,30 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 			}
 		}
 	}
+
+    fun fetchAllUsers() {
+        viewModelScope.launch {
+            _dataStatus.value = StoreDataStatus.LOADING
+            val res = authRepository.getAllUsers()
+            if (res is Success) {
+                _allUsers.value = res.data
+                _dataStatus.value = StoreDataStatus.DONE
+            } else {
+                _allUsers.value = emptyList()
+                _dataStatus.value = StoreDataStatus.ERROR
+            }
+        }
+    }
+
+    fun deleteUserAccount(userId: String) {
+        viewModelScope.launch {
+            _dataStatus.value = StoreDataStatus.LOADING
+            val res = authRepository.deleteUser(userId)
+            if (res is Success) {
+                fetchAllUsers()
+            } else {
+                _dataStatus.value = StoreDataStatus.ERROR
+            }
+        }
+    }
 }

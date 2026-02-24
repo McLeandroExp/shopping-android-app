@@ -295,6 +295,23 @@ class AuthRemoteDataSource : UserDataSource {
 		EmailMobileData::class.java
 	)
 
+	override suspend fun getAllUsers(): Result<List<UserData>> {
+		val resRef = usersCollectionRef().get().await()
+		return if (!resRef.isEmpty) {
+			Success(resRef.toObjects(UserData::class.java))
+		} else {
+			Error(Exception("Error getting Users!"))
+		}
+	}
+
+	override suspend fun deleteUser(userId: String) {
+		val resRef = usersCollectionRef().whereEqualTo(USERS_ID_FIELD, userId).get().await()
+		if (!resRef.isEmpty) {
+			val docId = resRef.documents[0].id
+			usersCollectionRef().document(docId).delete().await()
+		}
+	}
+
 	companion object {
 		private const val USERS_COLLECTION = "users"
 		private const val USERS_ID_FIELD = "userId"

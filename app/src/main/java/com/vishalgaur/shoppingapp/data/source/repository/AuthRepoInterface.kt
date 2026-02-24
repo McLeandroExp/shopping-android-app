@@ -30,6 +30,8 @@ interface AuthRepoInterface {
 	suspend fun getAddressesByUserId(userId: String): Result<List<UserData.Address>?>
 	suspend fun getLikesByUserId(userId: String): Result<List<String>?>
 	suspend fun getUserData(userId: String): Result<UserData?>
+	suspend fun getAllUsers(): Result<List<UserData>>
+	suspend fun deleteUser(userId: String): Result<Boolean>
 	fun getFirebaseAuth(): FirebaseAuth
 	fun signInWithPhoneAuthCredential(
 		credential: PhoneAuthCredential,
