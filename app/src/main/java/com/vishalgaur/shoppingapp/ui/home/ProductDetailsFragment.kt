@@ -159,7 +159,9 @@ class ProductDetailsFragment : Fragment() {
 
 	private fun setViews() {
 		binding.layoutViewsGroup.visibility = View.VISIBLE
-		binding.proDetailsAddCartBtn.visibility = View.VISIBLE
+		if (!viewModel.isSeller()) {
+			binding.proDetailsAddCartBtn.visibility = View.VISIBLE
+		}
 		binding.addProAppBar.topAppBar.title = viewModel.productData.value?.name
 		binding.addProAppBar.topAppBar.setNavigationOnClickListener {
 			findNavController().navigateUp()
