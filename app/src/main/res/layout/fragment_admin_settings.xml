@@ -89,9 +89,9 @@
                     android:textAppearance="@style/TextAppearance.MyTheme.Headline6" />
                 <Button
                     android:id="@+id/add_country_rule_btn"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/blue_accent_300"
                     android:text="Agregar" />
             </LinearLayout>
 
@@ -107,6 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:backgroundTint="@color/blue_accent_300"
                 android:text="Guardar Cambios" />
 
         </LinearLayout>

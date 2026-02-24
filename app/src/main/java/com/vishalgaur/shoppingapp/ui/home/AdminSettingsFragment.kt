@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -15,8 +17,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.AppConfig
 import com.vishalgaur.shoppingapp.data.CountryConfig
+import com.vishalgaur.shoppingapp.data.utils.getISOCountriesMap
 import com.vishalgaur.shoppingapp.databinding.FragmentAdminSettingsBinding
 import com.vishalgaur.shoppingapp.viewModels.OrderViewModel
+import java.util.*
 
 class AdminSettingsFragment : Fragment() {
 
@@ -42,10 +46,21 @@ class AdminSettingsFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        countryRulesAdapter = CountryRulesAdapter(emptyList()) { countryCode ->
-            currentCountryRules.remove(countryCode)
-            updateRulesList()
-        }
+        countryRulesAdapter = CountryRulesAdapter(
+            emptyList(),
+            onEdit = { code, config -> showAddRuleDialog(code, config) },
+            onDelete = { code ->
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Eliminar Regla")
+                    .setMessage("¿Deseas eliminar la regla para $code?")
+                    .setPositiveButton("Eliminar") { _, _ ->
+                        currentCountryRules.remove(code)
+                        updateRulesList()
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+        )
         binding.countryRulesRv.layoutManager = LinearLayoutManager(requireContext())
         binding.countryRulesRv.adapter = countryRulesAdapter
 
@@ -74,26 +89,52 @@ class AdminSettingsFragment : Fragment() {
         countryRulesAdapter.updateData(currentCountryRules.toList())
     }
 
-    private fun showAddRuleDialog() {
+    private fun showAddRuleDialog(initialCode: String? = null, initialConfig: CountryConfig? = null) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_country_rule, null)
-        val countryEt = dialogView.findViewById<EditText>(R.id.country_code_et)
+        val countrySelectorTil = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.country_selector_til)
+        val countrySelector = dialogView.findViewById<AutoCompleteTextView>(R.id.country_code_et)
         val shippingEt = dialogView.findViewById<EditText>(R.id.rule_shipping_et)
         val importEt = dialogView.findViewById<EditText>(R.id.rule_import_et)
         val taxEt = dialogView.findViewById<EditText>(R.id.rule_tax_et)
 
+        val isoCountriesMap = getISOCountriesMap()
+        val countries = isoCountriesMap.values.toSortedSet().toList()
+        val countryAdapter = ArrayAdapter(requireContext(), R.layout.country_list_item, countries)
+        
+        countrySelector.setAdapter(countryAdapter)
+        
+        if (initialCode != null && initialConfig != null) {
+            val countryName = isoCountriesMap[initialCode]
+            countrySelectorTil.visibility = View.GONE
+            countrySelector.setText(countryName, false)
+            shippingEt.setText(initialConfig.shippingCharge.toString())
+            importEt.setText(initialConfig.importCharge.toString())
+            taxEt.setText(initialConfig.taxPercentage.toString())
+        } else {
+            countrySelectorTil.visibility = View.VISIBLE
+            countrySelector.setText("Ecuador", false)
+        }
+
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Agregar Regla por Pais")
+            .setTitle(if (initialCode == null) "Agregar Regla por Pais" else "Editar Regla de ${initialCode}")
             .setView(dialogView)
-            .setPositiveButton("Agregar") { _, _ ->
-                val code = countryEt.text.toString().toUpperCase(java.util.Locale.ROOT)
-                if (code.isNotEmpty()) {
+            .setPositiveButton(if (initialCode == null) "Agregar" else "Actualizar") { _, _ ->
+                val selectedName = countrySelector.text.toString()
+                val code = isoCountriesMap.keys.find { isoCountriesMap[it] == selectedName }
+                if (code != null) {
                     val config = CountryConfig(
                         shippingCharge = shippingEt.text.toString().toDoubleOrNull() ?: 0.0,
                         importCharge = importEt.text.toString().toDoubleOrNull() ?: 0.0,
                         taxPercentage = taxEt.text.toString().toDoubleOrNull() ?: 0.0
                     )
+                    // If editing and code changed, remove old one
+                    if (initialCode != null && initialCode != code) {
+                        currentCountryRules.remove(initialCode)
+                    }
                     currentCountryRules[code] = config
                     updateRulesList()
+                } else {
+                    Toast.makeText(requireContext(), "Error al identificar el país", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Cancelar", null)
@@ -114,36 +155,32 @@ class AdminSettingsFragment : Fragment() {
 
     inner class CountryRulesAdapter(
         private var data: List<Pair<String, CountryConfig>>,
+        private val onEdit: (String, CountryConfig) -> Unit,
         private val onDelete: (String) -> Unit
     ) : RecyclerView.Adapter<CountryRulesAdapter.ViewHolder>() {
 
+        private val isoCountriesMap = getISOCountriesMap()
+
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val text1 = view.findViewById<android.widget.TextView>(android.R.id.text1)
-            val text2 = view.findViewById<android.widget.TextView>(android.R.id.text2)
-            
-            init {
-                view.setOnLongClickListener {
-                    val code = data[adapterPosition].first
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Eliminar Regla")
-                        .setMessage("¿Deseas eliminar la regla para $code?")
-                        .setPositiveButton("Eliminar") { _, _ -> onDelete(code) }
-                        .setNegativeButton("Cancelar", null)
-                        .show()
-                    true
-                }
-            }
+            val countryNameTv = view.findViewById<android.widget.TextView>(R.id.rule_country_name_tv)
+            val detailsTv = view.findViewById<android.widget.TextView>(R.id.rule_details_tv)
+            val editBtn = view.findViewById<android.widget.ImageButton>(R.id.rule_edit_btn)
+            val deleteBtn = view.findViewById<android.widget.ImageButton>(R.id.rule_delete_btn)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_2, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_country_rule, parent, false)
             return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val (code, config) = data[position]
-            holder.text1.text = "Pais: $code"
-            holder.text2.text = "Envio: ${config.shippingCharge}, Import.: ${config.importCharge}, Impuesto: ${config.taxPercentage}%"
+            val countryName = isoCountriesMap[code] ?: code
+            holder.countryNameTv.text = "$countryName ($code)"
+            holder.detailsTv.text = "Envío: ${config.shippingCharge}, Import.: ${config.importCharge}, Impuesto: ${config.taxPercentage}%"
+            
+            holder.editBtn.setOnClickListener { onEdit(code, config) }
+            holder.deleteBtn.setOnClickListener { onDelete(code) }
         }
 
         override fun getItemCount() = data.size

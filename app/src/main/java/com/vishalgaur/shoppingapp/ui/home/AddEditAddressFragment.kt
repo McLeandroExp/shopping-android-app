@@ -197,7 +197,7 @@ class AddEditAddressFragment : Fragment() {
 	private fun setCountrySelectTextField() {
 		val isoCountriesMap = getISOCountriesMap()
 		val countries = isoCountriesMap.values.toSortedSet().toList()
-		val defaultCountry = Locale.getDefault().displayCountry
+		val defaultCountry = "Ecuador"
 		val countryAdapter = ArrayAdapter(requireContext(), R.layout.country_list_item, countries)
 		(binding.addressCountryEditText as? AutoCompleteTextView)?.let {
 			it.setText(defaultCountry, false)

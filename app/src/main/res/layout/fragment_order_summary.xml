@@ -75,6 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/blue_accent_300"
         android:text="Confirmar y Pagar"
         android:padding="16dp" />
 
