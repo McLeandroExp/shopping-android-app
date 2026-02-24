@@ -78,7 +78,16 @@
             android:id="@+id/action_selectAddressFragment_to_addEditAddressFragment"
             app:destination="@id/addEditAddressFragment" />
         <action
-            android:id="@+id/action_selectAddressFragment_to_selectPaymentFragment"
+            android:id="@+id/action_selectAddressFragment_to_orderSummaryFragment"
+            app:destination="@id/orderSummaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderSummaryFragment"
+        android:name="com.vishalgaur.shoppingapp.ui.home.OrderSummaryFragment"
+        android:label="fragment_order_summary"
+        tools:layout="@layout/fragment_order_summary" >
+        <action
+            android:id="@+id/action_orderSummaryFragment_to_selectPaymentFragment"
             app:destination="@id/selectPaymentFragment" />
     </fragment>
     <fragment
@@ -199,5 +208,11 @@
         android:name="com.vishalgaur.shoppingapp.ui.home.AdminUsersFragment"
         android:label="fragment_admin_users"
         tools:layout="@layout/fragment_admin_users" />
+
+    <fragment
+        android:id="@+id/adminSettingsFragment"
+        android:name="com.vishalgaur.shoppingapp.ui.home.AdminSettingsFragment"
+        android:label="fragment_admin_settings"
+        tools:layout="@layout/fragment_admin_settings" />
 
 </navigation>

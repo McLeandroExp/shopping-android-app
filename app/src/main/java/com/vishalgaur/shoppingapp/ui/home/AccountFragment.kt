@@ -56,12 +56,16 @@ class AccountFragment : Fragment() {
 		if (sessionManager.isUserAdmin()) {
 			binding.accountAdminProductsTv.visibility = View.VISIBLE
 			binding.accountAdminUsersTv.visibility = View.VISIBLE
+			binding.accountAdminSettingsTv.visibility = View.VISIBLE
 			
 			binding.accountAdminProductsTv.setOnClickListener {
 				findNavController().navigate(R.id.adminProductsFragment)
 			}
 			binding.accountAdminUsersTv.setOnClickListener {
 				findNavController().navigate(R.id.adminUsersFragment)
+			}
+			binding.accountAdminSettingsTv.setOnClickListener {
+				findNavController().navigate(R.id.adminSettingsFragment)
 			}
 		}
 	}

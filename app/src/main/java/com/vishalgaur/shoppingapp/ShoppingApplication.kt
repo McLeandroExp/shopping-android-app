@@ -11,6 +11,9 @@ class ShoppingApplication : Application() {
 	val productsRepository: ProductsRepoInterface
 		get() = ServiceLocator.provideProductsRepository(this)
 
+	val settingsRepository: com.vishalgaur.shoppingapp.data.source.repository.SettingsRepository
+		get() = ServiceLocator.provideSettingsRepository()
+
 	override fun onCreate() {
 		super.onCreate()
 	}

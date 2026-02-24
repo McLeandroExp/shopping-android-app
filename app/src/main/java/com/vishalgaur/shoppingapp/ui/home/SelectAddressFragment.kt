@@ -134,9 +134,9 @@ class SelectAddressFragment : Fragment() {
 	private fun navigateToPaymentFragment(addressId: String?) {
 		if (addressId != null) {
 			orderViewModel.setSelectedAddress(addressId)
-			Log.d(TAG, "navigate to Payment")
+			Log.d(TAG, "navigate to Summary")
 			binding.shipToErrorTextView.visibility = View.GONE
-			findNavController().navigate(R.id.action_selectAddressFragment_to_selectPaymentFragment)
+			findNavController().navigate(R.id.action_selectAddressFragment_to_orderSummaryFragment)
 
 		} else {
 			Log.d(TAG, "error = select one address")

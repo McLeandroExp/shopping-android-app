@@ -125,10 +125,32 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/account_admin_products_tv" />
 
+        <TextView
+            android:id="@+id/account_admin_settings_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawablePadding="16dp"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:padding="16dp"
+            android:text="Administrar Configuracion"
+            android:textAppearance="@style/TextAppearance.MyTheme.Body1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/ic_outlined_inventory_24"
+            app:drawableTint="@color/blue_accent_300"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/account_admin_users_tv" />
+
         <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/account_admin_users_tv"
+            app:layout_constraintTop_toBottomOf="@id/account_admin_settings_tv"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 

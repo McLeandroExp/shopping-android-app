@@ -82,6 +82,28 @@
             app:layout_constraintTop_toTopOf="@+id/price_charges_label_tv"
             tools:text="$123.45" />
 
+        <TextView
+            android:id="@+id/price_tax_label_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Impuesto"
+            android:textAppearance="@style/TextAppearance.MyTheme.Body1"
+            android:textColor="@color/dark_gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/price_charges_label_tv" />
+
+        <TextView
+            android:id="@+id/price_tax_amount_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MyTheme.Body1"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/price_tax_label_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/price_tax_label_tv"
+            tools:text="$12.34" />
+
         <ImageView
             android:id="@+id/card_dotted_divider"
             android:layout_width="match_parent"
@@ -91,7 +113,7 @@
             android:layerType="software"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/price_charges_label_tv"
+            app:layout_constraintTop_toBottomOf="@+id/price_tax_label_tv"
             app:srcCompat="@drawable/dotted_line_drawable" />
 
         <TextView

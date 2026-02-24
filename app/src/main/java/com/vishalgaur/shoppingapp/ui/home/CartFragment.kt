@@ -194,10 +194,19 @@ class CartFragment : Fragment() {
 				)
 				priceCardBinding.priceItemsAmountTv.text =
 					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().formatToTwoDecimals())
-				priceCardBinding.priceShippingAmountTv.text = getString(R.string.price_text, "0")
-				priceCardBinding.priceChargesAmountTv.text = getString(R.string.price_text, "0")
+				
+				priceCardBinding.priceShippingLabelTv.visibility = View.GONE
+				priceCardBinding.priceShippingAmountTv.visibility = View.GONE
+				priceCardBinding.priceChargesLabelTv.visibility = View.GONE
+				priceCardBinding.priceChargesAmountTv.visibility = View.GONE
+				priceCardBinding.priceTaxLabelTv.visibility = View.GONE
+				priceCardBinding.priceTaxAmountTv.visibility = View.GONE
+				
+				priceCardBinding.priceTotalLabelTv.text = "Precio sin impuestos"
 				priceCardBinding.priceTotalAmountTv.text =
 					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().formatToTwoDecimals())
+				
+				binding.cartCheckOutBtn.text = "Siguiente"
 			}
 		}
 

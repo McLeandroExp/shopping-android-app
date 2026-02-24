@@ -29,6 +29,10 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 
 	private val authRepository = (application as ShoppingApplication).authRepository
 	private val productsRepository = (application as ShoppingApplication).productsRepository
+	private val settingsRepository = (application as ShoppingApplication).settingsRepository
+
+	private val _appConfig = MutableLiveData<com.vishalgaur.shoppingapp.data.AppConfig>()
+	val appConfig: LiveData<com.vishalgaur.shoppingapp.data.AppConfig> get() = _appConfig
 
 	private val _userAddresses = MutableLiveData<List<UserData.Address>>()
 	val userAddresses: LiveData<List<UserData.Address>> get() = _userAddresses
@@ -52,12 +56,57 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 	val orderStatus: LiveData<StoreDataStatus> get() = _orderStatus
 
 	private val _selectedAddress = MutableLiveData<String>()
+	val selectedAddressId: LiveData<String> get() = _selectedAddress
+	
+	private val _selectedAddressData = MutableLiveData<UserData.Address?>()
+	val selectedAddressData: LiveData<UserData.Address?> get() = _selectedAddressData
+
 	private val _selectedPaymentMethod = MutableLiveData<String>()
 	private val newOrderData = MutableLiveData<UserData.OrderItem>()
+
+	private val _shippingCharges = MutableLiveData<Double>(0.0)
+	val shippingCharges: LiveData<Double> get() = _shippingCharges
+
+	private val _importCharges = MutableLiveData<Double>(0.0)
+	val importCharges: LiveData<Double> get() = _importCharges
+
+	private val _taxAmount = MutableLiveData<Double>(0.0)
+	val taxAmount: LiveData<Double> get() = _taxAmount
+
+	private val _totalWithCharges = MutableLiveData<Double>(0.0)
+	val totalWithCharges: LiveData<Double> get() = _totalWithCharges
 
 	init {
 		viewModelScope.launch {
 			getUserLikes()
+			getAppConfig()
+		}
+	}
+
+	fun getAppConfig() {
+		viewModelScope.launch {
+			val res = settingsRepository.getAppConfig()
+			if (res is Success) {
+				_appConfig.value = res.data
+			}
+		}
+	}
+
+	fun saveAppConfig(config: com.vishalgaur.shoppingapp.data.AppConfig) {
+		viewModelScope.launch {
+			val res = settingsRepository.saveAppConfig(config)
+			if (res is Success) {
+				_appConfig.value = config
+			}
+		}
+	}
+
+	fun getEffectiveConfig(countryCode: String?): com.vishalgaur.shoppingapp.data.CountryConfig {
+		val config = _appConfig.value ?: com.vishalgaur.shoppingapp.data.AppConfig()
+		return if (countryCode != null && config.countryRules.containsKey(countryCode)) {
+			config.countryRules[countryCode]!!
+		} else {
+			config.defaultConfig
 		}
 	}
 
@@ -253,6 +302,23 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 
 	fun setSelectedAddress(addressId: String) {
 		_selectedAddress.value = addressId
+		val address = _userAddresses.value?.find { it.addressId == addressId }
+		_selectedAddressData.value = address
+		calculateCharges(address?.countryISOCode)
+	}
+
+	private fun calculateCharges(countryCode: String?) {
+		val config = getEffectiveConfig(countryCode)
+		val subtotal = getItemsPriceTotal()
+		
+		val shipping = config.shippingCharge
+		val import = config.importCharge
+		val tax = (subtotal + shipping + import) * (config.taxPercentage / 100.0)
+		
+		_shippingCharges.value = shipping.roundToTwoDecimals()
+		_importCharges.value = import.roundToTwoDecimals()
+		_taxAmount.value = tax.roundToTwoDecimals()
+		_totalWithCharges.value = (subtotal + shipping + import + tax).roundToTwoDecimals()
 	}
 
 	fun setSelectedPaymentMethod(method: String) {
@@ -268,7 +334,10 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 		val orderId = getRandomString(6, currDate.time.toString(), 1)
 		val items = _cartItems.value
 		val itemPrices = _priceList.value
-		val shippingCharges = 0.0
+		val shipping = _shippingCharges.value ?: 0.0
+		val import = _importCharges.value ?: 0.0
+		val tax = _taxAmount.value ?: 0.0
+		
 		if (deliveryAddress != null && paymentMethod != null && !items.isNullOrEmpty() && !itemPrices.isNullOrEmpty()) {
 			val newOrder = UserData.OrderItem(
 				orderId,
@@ -276,7 +345,9 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 				items,
 				itemPrices,
 				deliveryAddress,
-				shippingCharges,
+				shipping,
+				import,
+				tax,
 				paymentMethod,
 				currDate,
 			)

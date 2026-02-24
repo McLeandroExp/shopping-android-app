@@ -27,6 +27,9 @@ object ServiceLocator {
 	var productsRepository: ProductsRepoInterface? = null
 		@VisibleForTesting set
 
+	@Volatile
+	var settingsRepository: com.vishalgaur.shoppingapp.data.source.repository.SettingsRepository? = null
+
 	fun provideAuthRepository(context: Context): AuthRepoInterface {
 		synchronized(this) {
 			return authRepository ?: createAuthRepository(context)
@@ -37,6 +40,18 @@ object ServiceLocator {
 		synchronized(this) {
 			return productsRepository ?: createProductsRepository(context)
 		}
+	}
+
+	fun provideSettingsRepository(): com.vishalgaur.shoppingapp.data.source.repository.SettingsRepository {
+		synchronized(this) {
+			return settingsRepository ?: createSettingsRepository()
+		}
+	}
+
+	private fun createSettingsRepository(): com.vishalgaur.shoppingapp.data.source.repository.SettingsRepository {
+		val newRepo = com.vishalgaur.shoppingapp.data.source.repository.SettingsRepository()
+		settingsRepository = newRepo
+		return newRepo
 	}
 
 	@VisibleForTesting

@@ -216,6 +216,8 @@ class AuthRemoteDataSource : UserDataSource {
 					itemPrices,
 					newOrder.deliveryAddress,
 					newOrder.shippingCharges,
+					newOrder.importCharges,
+					newOrder.taxAmount,
 					newOrder.paymentMethod,
 					newOrder.orderDate,
 					OrderStatus.CONFIRMED.name

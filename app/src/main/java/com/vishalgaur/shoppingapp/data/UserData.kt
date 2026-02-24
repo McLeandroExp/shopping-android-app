@@ -50,6 +50,8 @@ data class UserData(
 		var itemsPrices: Map<String, Double> = mapOf(),
 		var deliveryAddress: Address = Address(),
 		var shippingCharges: Double = 0.0,
+		var importCharges: Double = 0.0,
+		var taxAmount: Double = 0.0,
 		var paymentMethod: String = "",
 		var orderDate: Date = Date(),
 		var status: String = OrderStatus.CONFIRMED.name
@@ -62,6 +64,8 @@ data class UserData(
 				"itemsPrices" to itemsPrices,
 				"deliveryAddress" to deliveryAddress.toHashMap(),
 				"shippingCharges" to shippingCharges,
+				"importCharges" to importCharges,
+				"taxAmount" to taxAmount,
 				"paymentMethod" to paymentMethod,
 				"orderDate" to orderDate,
 				"status" to status
