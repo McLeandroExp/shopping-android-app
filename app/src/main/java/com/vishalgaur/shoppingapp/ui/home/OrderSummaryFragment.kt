@@ -33,11 +33,27 @@ class OrderSummaryFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        val productsAdapter = SummaryProductsAdapter()
+        binding.summaryProductsRv.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+        binding.summaryProductsRv.adapter = productsAdapter
+
         orderViewModel.selectedAddressData.observe(viewLifecycleOwner) { address ->
             if (address != null) {
                 binding.summaryAddressName.text = "${address.fName} ${address.lName}"
                 binding.summaryAddressDetails.text = "${address.streetAddress}, ${address.city}, ${address.countryISOCode}"
             }
+        }
+        
+        orderViewModel.cartItems.observe(viewLifecycleOwner) { items ->
+            val products = orderViewModel.cartProducts.value ?: emptyList()
+            val prices = orderViewModel.priceList.value ?: emptyMap()
+            productsAdapter.setData(items, products, prices)
+        }
+
+        orderViewModel.cartProducts.observe(viewLifecycleOwner) { products ->
+            val items = orderViewModel.cartItems.value ?: emptyList()
+            val prices = orderViewModel.priceList.value ?: emptyMap()
+            productsAdapter.setData(items, products, prices)
         }
         
         orderViewModel.shippingCharges.observe(viewLifecycleOwner) { displayPrices() }
@@ -63,5 +79,40 @@ class OrderSummaryFragment : Fragment() {
         binding.priceCard.priceChargesAmountTv.text = getString(R.string.price_text, import.formatToTwoDecimals())
         binding.priceCard.priceTaxAmountTv.text = getString(R.string.price_text, tax.formatToTwoDecimals())
         binding.priceCard.priceTotalAmountTv.text = getString(R.string.price_text, total.formatToTwoDecimals())
+    }
+
+    inner class SummaryProductsAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<SummaryProductsAdapter.ViewHolder>() {
+        private var items: List<com.vishalgaur.shoppingapp.data.UserData.CartItem> = emptyList()
+        private var products: List<com.vishalgaur.shoppingapp.data.Product> = emptyList()
+        private var prices: Map<String, Double> = emptyMap()
+
+        fun setData(newItems: List<com.vishalgaur.shoppingapp.data.UserData.CartItem>, newProducts: List<com.vishalgaur.shoppingapp.data.Product>, newPrices: Map<String, Double>) {
+            items = newItems
+            products = newProducts
+            prices = newPrices
+            notifyDataSetChanged()
+        }
+
+        inner class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+            val nameTv: android.widget.TextView = view.findViewById(R.id.summary_item_name)
+            val priceTv: android.widget.TextView = view.findViewById(R.id.summary_item_price)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_summary_product, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = items[position]
+            val product = products.find { it.productId == item.productId }
+            val unitPrice = prices[item.itemId] ?: product?.price ?: 0.0
+            val subtotal = unitPrice * item.quantity
+            
+            holder.nameTv.text = "${product?.name ?: "Producto"} x${item.quantity}"
+            holder.priceTv.text = getString(R.string.price_text, subtotal.formatToTwoDecimals())
+        }
+
+        override fun getItemCount() = items.size
     }
 }
