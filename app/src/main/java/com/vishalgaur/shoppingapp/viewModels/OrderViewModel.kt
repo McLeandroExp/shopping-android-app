@@ -313,7 +313,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 		
 		val shipping = config.shippingCharge
 		val import = config.importCharge
-		val tax = (subtotal + shipping + import) * (config.taxPercentage / 100.0)
+		val tax = subtotal * (config.taxPercentage / 100.0)
 		
 		_shippingCharges.value = shipping.roundToTwoDecimals()
 		_importCharges.value = import.roundToTwoDecimals()
