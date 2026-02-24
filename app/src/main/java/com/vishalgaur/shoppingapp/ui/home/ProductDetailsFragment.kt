@@ -225,35 +225,44 @@ class ProductDetailsFragment : Fragment() {
 	}
 
 	private fun updateCategorySpecificViews(category: String) {
-		// Default: Hide all specific views
+		// Default: Hide all specific views and containers
 		binding.proDetailsSelectSizeLabel.visibility = View.GONE
-		binding.proDetailsSizesRadioGroup.visibility = View.GONE
+		binding.proSizeRadioScroll.visibility = View.GONE
 		binding.proDetailsSelectColorLabel.visibility = View.GONE
-		binding.proDetailsColorsRadioGroup.visibility = View.GONE
+		binding.proColorRadioScroll.visibility = View.GONE
+		binding.proDetailsVariantsInfoTv.visibility = View.GONE
 
 		when (category) {
 			"Medicamentos", "Suplementos" -> {
 				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
-				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proColorRadioScroll.visibility = View.VISIBLE
 				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
 				setCategorySpecificButtons(ProductVariants)
 			}
 			"Equipos Médicos" -> {
 				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
-				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proDetailsVariantsInfoTv.visibility = View.VISIBLE
 				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
-				setCategorySpecificButtons(EquipmentTypes)
+				
+				// Show info as text instead of selection
+				val availableTypes = viewModel.productData.value?.availableTypes ?: emptyList()
+				if (availableTypes.isNotEmpty()) {
+					binding.proDetailsVariantsInfoTv.text = availableTypes.joinToString(", ")
+					selectedColor = availableTypes[0] // Auto-select the first one
+				} else {
+					binding.proDetailsVariantsInfoTv.text = "No especificado"
+				}
 			}
 			"Cuidado Personal" -> {
 				binding.proDetailsSelectColorLabel.visibility = View.VISIBLE
-				binding.proDetailsColorsRadioGroup.visibility = View.VISIBLE
+				binding.proColorRadioScroll.visibility = View.VISIBLE
 				binding.proDetailsSelectColorLabel.text = getString(R.string.pro_details_type_doses_label)
 				setCategorySpecificButtons(PersonalCareTypes)
 			}
 			else -> {
 				// Show original size labels for other categories if any
 				binding.proDetailsSelectSizeLabel.visibility = View.VISIBLE
-				binding.proDetailsSizesRadioGroup.visibility = View.VISIBLE
+				binding.proSizeRadioScroll.visibility = View.VISIBLE
 			}
 		}
 	}

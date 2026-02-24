@@ -137,16 +137,20 @@ class ProductViewModel(private val productId: String, application: Application) 
 	fun addToCart(size: String?, color: String?) {
 		val errList = mutableListOf<AddItemErrors>()
 		val category = _productData.value?.category ?: ""
-		val isTypesRequired = category == "Equipos Médicos"
+		val availableTypes = _productData.value?.availableTypes ?: emptyList()
+		var finalColor = color
 
-		if (isTypesRequired && color.isNullOrBlank()) errList.add(AddItemErrors.ERROR_COLOR)
+		// If it's Medical Equipment and no color provided, use the first available type as default
+		if (category == "Equipos Médicos" && finalColor.isNullOrBlank() && availableTypes.isNotEmpty()) {
+			finalColor = availableTypes[0]
+		}
 
 		_errorStatus.value = errList
 
 		if (errList.isEmpty()) {
 			val itemId = UUID.randomUUID().toString()
 			val newItem = UserData.CartItem(
-				itemId, productId, productData.value!!.owner, 1, color
+				itemId, productId, productData.value!!.owner, 1, finalColor
 			)
 			insertCartItem(newItem)
 		}
