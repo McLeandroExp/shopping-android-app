@@ -24,3 +24,7 @@ fun getISOCountriesMap(): Map<String, String> {
 	}
 	return result
 }
+
+fun Double.formatToTwoDecimals(): String = "%.2f".format(Locale.ENGLISH, this)
+
+fun Double.roundToTwoDecimals(): Double = String.format(Locale.ENGLISH, "%.2f", this).toDouble()

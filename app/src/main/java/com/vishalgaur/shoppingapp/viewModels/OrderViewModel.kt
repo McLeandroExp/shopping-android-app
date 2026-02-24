@@ -12,6 +12,8 @@ import com.vishalgaur.shoppingapp.data.Result.Error
 import com.vishalgaur.shoppingapp.data.Result.Success
 import com.vishalgaur.shoppingapp.data.ShoppingAppSessionManager
 import com.vishalgaur.shoppingapp.data.UserData
+import com.vishalgaur.shoppingapp.data.utils.roundToTwoDecimals
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.getRandomString
 import kotlinx.coroutines.async
@@ -155,7 +157,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 		_priceList.value?.forEach { (itemId, price) ->
 			totalPrice += price * (_cartItems.value?.find { it.itemId == itemId }?.quantity ?: 1)
 		}
-		return totalPrice
+		return totalPrice.roundToTwoDecimals()
 	}
 
 	fun toggleLikeProduct(productId: String) {

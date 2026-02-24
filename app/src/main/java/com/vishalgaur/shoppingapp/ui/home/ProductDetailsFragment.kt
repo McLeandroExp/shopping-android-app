@@ -31,6 +31,7 @@ import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentProductDetailsBinding
 import com.vishalgaur.shoppingapp.ui.AddItemErrors
 import com.vishalgaur.shoppingapp.ui.DotsIndicatorDecoration
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.viewModels.ProductViewModel
 
 class ProductDetailsFragment : Fragment() {
@@ -185,7 +186,7 @@ class ProductDetailsFragment : Fragment() {
 		binding.proDetailsRatingBar.rating = (viewModel.productData.value?.rating ?: 0.0).toFloat()
 		binding.proDetailsPriceTv.text = resources.getString(
 			R.string.pro_details_price_value,
-			viewModel.productData.value?.price.toString()
+			viewModel.productData.value?.price?.formatToTwoDecimals() ?: "0.00"
 		)
 		updateCategorySpecificViews(viewModel.productData.value?.category ?: "")
 		binding.proDetailsSpecificationsLabel.text = getString(R.string.pro_details_desc_label_text)

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.UserData
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentCartBinding
 import com.vishalgaur.shoppingapp.databinding.LayoutCircularLoaderBinding
@@ -192,11 +193,11 @@ class CartFragment : Fragment() {
 					orderViewModel.getItemsCount().toString()
 				)
 				priceCardBinding.priceItemsAmountTv.text =
-					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().toString())
+					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().formatToTwoDecimals())
 				priceCardBinding.priceShippingAmountTv.text = getString(R.string.price_text, "0")
 				priceCardBinding.priceChargesAmountTv.text = getString(R.string.price_text, "0")
 				priceCardBinding.priceTotalAmountTv.text =
-					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().toString())
+					getString(R.string.price_text, orderViewModel.getItemsPriceTotal().formatToTwoDecimals())
 			}
 		}
 

@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.Product
 import com.vishalgaur.shoppingapp.data.UserData
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.databinding.CartListItemBinding
 import com.vishalgaur.shoppingapp.databinding.LayoutCircularLoaderBinding
 
@@ -30,7 +31,7 @@ class CartItemAdapter(
 			val proData = proList.find { it.productId == itemData.productId } ?: Product()
 			binding.cartProductTitleTv.text = proData.name
 			binding.cartProductPriceTv.text =
-				context.getString(R.string.price_text, proData.price.toString())
+				context.getString(R.string.price_text, proData.price.formatToTwoDecimals())
 			if (proData.images.isNotEmpty()) {
 				val imgUrl = proData.images[0].toUri().buildUpon().scheme("https").build()
 				Glide.with(context)

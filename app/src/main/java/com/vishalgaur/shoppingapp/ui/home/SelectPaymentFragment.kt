@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.databinding.FragmentSelectPaymentBinding
 import com.vishalgaur.shoppingapp.viewModels.OrderViewModel
@@ -39,7 +40,7 @@ class SelectPaymentFragment : Fragment() {
 		binding.payByErrorTextView.visibility = View.GONE
 		binding.payByPaymentsRecyclerView.adapter = methodsAdapter
 		binding.payByNextBtn.text =
-			getString(R.string.pay_by_next_btn_text, orderViewModel.getItemsPriceTotal().toString())
+			getString(R.string.pay_by_next_btn_text, orderViewModel.getItemsPriceTotal().formatToTwoDecimals())
 		binding.payByNextBtn.setOnClickListener {
 			navigateToOrderSuccess(methodsAdapter.lastCheckedMethod)
 		}

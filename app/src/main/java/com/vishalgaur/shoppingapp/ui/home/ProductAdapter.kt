@@ -16,6 +16,7 @@ import com.vishalgaur.shoppingapp.data.ShoppingAppSessionManager
 import com.vishalgaur.shoppingapp.databinding.LayoutHomeAdBinding
 import com.vishalgaur.shoppingapp.databinding.ProductsListItemBinding
 import com.vishalgaur.shoppingapp.getOfferPercentage
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 
 class ProductAdapter(
 	proList: List<Any>,
@@ -52,7 +53,7 @@ class ProductAdapter(
 			}
 			proName.text = productData.name
 			proPrice.text =
-				context.getString(R.string.pro_details_price_value, productData.price.toString())
+				context.getString(R.string.pro_details_price_value, productData.price.formatToTwoDecimals())
 			proRatingBar.rating = productData.rating.toFloat()
 			proMrp.visibility = View.GONE
 			proOffer.visibility = View.GONE

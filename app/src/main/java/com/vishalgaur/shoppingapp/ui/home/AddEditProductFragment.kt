@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.text.InputFilter
+import android.text.Spanned
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -25,6 +27,7 @@ import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentAddEditProductBinding
 import com.vishalgaur.shoppingapp.ui.AddProductViewErrors
 import com.vishalgaur.shoppingapp.ui.MyOnFocusChangeListener
+import com.vishalgaur.shoppingapp.data.utils.roundToTwoDecimals
 import com.vishalgaur.shoppingapp.viewModels.AddEditProductViewModel
 import kotlin.properties.Delegates
 
@@ -214,6 +217,7 @@ class AddEditProductFragment : Fragment() {
 		binding.addProErrorTextView.visibility = View.GONE
 		binding.proNameEditText.onFocusChangeListener = focusChangeListener
 		binding.proPriceEditText.onFocusChangeListener = focusChangeListener
+		binding.proPriceEditText.filters = arrayOf(DecimalDigitsInputFilter(10, 2))
 		binding.proDescEditText.onFocusChangeListener = focusChangeListener
 
 		binding.addProBtn.setOnClickListener {
@@ -230,7 +234,7 @@ class AddEditProductFragment : Fragment() {
 
 	private fun onAddProduct() {
 		val name = binding.proNameEditText.text.toString()
-		val price = binding.proPriceEditText.text.toString().toDoubleOrNull()
+		val price = binding.proPriceEditText.text.toString().toDoubleOrNull()?.roundToTwoDecimals()
 		val mrp = price // Setting MRP same as price since it's hidden
 		val desc = binding.proDescEditText.text.toString()
 		Log.d(
@@ -293,5 +297,27 @@ class AddEditProductFragment : Fragment() {
 
 	private fun makeToast(text: String) {
 		Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+	}
+
+	inner class DecimalDigitsInputFilter(digitsBeforeZero: Int, digitsAfterZero: Int) : InputFilter {
+		private val pattern = java.util.regex.Pattern.compile(
+			"[0-9]{0,$digitsBeforeZero}+((\\.[0-9]{0,$digitsAfterZero})?)||(\\.)?"
+		)
+
+		override fun filter(
+			source: CharSequence,
+			start: Int,
+			end: Int,
+			dest: Spanned,
+			dstart: Int,
+			dend: Int
+		): CharSequence? {
+			val replacement = source.subSequence(start, end).toString()
+			val newVal = dest.subSequence(0, dstart).toString() + replacement +
+					dest.subSequence(dend, dest.length).toString()
+			val matcher = pattern.matcher(newVal)
+			if (matcher.matches()) return null
+			return ""
+		}
 	}
 }
