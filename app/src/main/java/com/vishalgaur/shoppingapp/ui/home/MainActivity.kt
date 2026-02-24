@@ -29,7 +29,16 @@ class MainActivity : AppCompatActivity() {
 	private fun setUpNav() {
 		val navFragment =
 			supportFragmentManager.findFragmentById(R.id.home_nav_host_fragment) as NavHostFragment
-		NavigationUI.setupWithNavController(binding.homeBottomNavigation, navFragment.navController)
+		val navController = navFragment.navController
+		val sessionManager = ShoppingAppSessionManager(this.applicationContext)
+
+		if (sessionManager.isUserSeller()) {
+			val navGraph = navController.navInflater.inflate(R.navigation.home_nav_graph)
+			navGraph.setStartDestination(R.id.myProductsFragment)
+			navController.graph = navGraph
+		}
+
+		NavigationUI.setupWithNavController(binding.homeBottomNavigation, navController)
 
 		navFragment.navController.addOnDestinationChangedListener { _, destination, _ ->
 			when (destination.id) {
@@ -43,7 +52,6 @@ class MainActivity : AppCompatActivity() {
 			}
 		}
 
-		val sessionManager = ShoppingAppSessionManager(this.applicationContext)
 		if (sessionManager.isUserSeller()) {
 			binding.homeBottomNavigation.menu.removeItem(R.id.homeFragment)
 			binding.homeBottomNavigation.menu.removeItem(R.id.cartFragment)

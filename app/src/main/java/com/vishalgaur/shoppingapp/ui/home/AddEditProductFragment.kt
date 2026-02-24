@@ -221,7 +221,7 @@ class AddEditProductFragment : Fragment() {
 			if (viewModel.errorStatus.value == AddProductViewErrors.NONE) {
 				viewModel.addProductErrors.observe(viewLifecycleOwner) { err ->
 					if (err == AddProductErrors.NONE) {
-						findNavController().navigate(R.id.action_addProductFragment_to_homeFragment)
+						findNavController().navigate(R.id.action_addProductFragment_to_myProductsFragment)
 					}
 				}
 			}

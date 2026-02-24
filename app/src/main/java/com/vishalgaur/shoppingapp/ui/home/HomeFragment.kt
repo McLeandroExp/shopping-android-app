@@ -226,10 +226,12 @@ class HomeFragment : Fragment() {
 			ProductAdapter(productsList ?: emptyList(), likesList, requireContext(), showOnlyMine)
 		productAdapter.onClickListener = object : ProductAdapter.OnClickListener {
 			override fun onClick(productData: Product) {
-				findNavController().navigate(
-					R.id.action_seeProduct,
-					bundleOf("productId" to productData.productId)
-				)
+				if (!viewModel.isUserASeller) {
+					findNavController().navigate(
+						R.id.action_seeProduct,
+						bundleOf("productId" to productData.productId)
+					)
+				}
 			}
 
 			override fun onDeleteClick(productData: Product) {
