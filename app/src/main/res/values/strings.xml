@@ -149,7 +149,8 @@
     <string name="order_summary_items_label">Artículos</string>
     <string name="no_orders_placed_text">Nada que mostrar</string>
     <string name="orders_fragment_title">Pedidos</string>
-    <string name="order_date_text">Pedido el: %s %s, %s</string>
+    <string name="order_date_text">Pedido el: %1$s %2$s, %3$s a las %4$02d:%5$02d</string>
+    <string name="order_item_product_detail">%1$s x %2$d</string>
     <string name="order_items_count_text">%s artículos comprados</string>
     <string name="products_label_text">Productos</string>
     <string name="shipping_details_label_text">Detalles de Envío</string>

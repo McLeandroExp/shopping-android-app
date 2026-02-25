@@ -48,7 +48,7 @@ class OrdersFragment : Fragment() {
 		}
 		binding.ordersEmptyTextView.visibility = View.GONE
 		if (context != null) {
-			ordersAdapter = OrdersAdapter(emptyList(), requireContext())
+			ordersAdapter = OrdersAdapter(emptyList(), requireContext(), viewModel.allProducts.value ?: emptyList())
 			ordersAdapter.onClickListener = object : OrdersAdapter.OnClickListener {
 				override fun onCardClick(orderId: String) {
 					Log.d(TAG, "onOrderSummaryClick: Getting order details")
@@ -79,14 +79,20 @@ class OrdersFragment : Fragment() {
 
 			if (status != null && status != StoreDataStatus.LOADING) {
 				viewModel.userOrders.observe(viewLifecycleOwner) { orders ->
-					if (orders.isNotEmpty()) {
+					if (orders != null && orders.isNotEmpty()) {
 						ordersAdapter.data = orders.sortedByDescending { it.orderDate }
-						binding.orderAllOrdersRecyclerView.adapter?.notifyDataSetChanged()
+						ordersAdapter.notifyDataSetChanged()
 						binding.orderAllOrdersRecyclerView.visibility = View.VISIBLE
-					} else if (orders.isEmpty()) {
+					} else if (orders != null && orders.isEmpty()) {
 						binding.loaderLayout.circularLoader.hideAnimationBehavior
 						binding.loaderLayout.loaderFrameLayout.visibility = View.GONE
 						binding.ordersEmptyTextView.visibility = View.VISIBLE
+					}
+				}
+				viewModel.allProducts.observe(viewLifecycleOwner) { products ->
+					if (products != null) {
+						ordersAdapter.proList = products
+						ordersAdapter.notifyDataSetChanged()
 					}
 				}
 			}
