@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.UserData
 import com.vishalgaur.shoppingapp.databinding.LayoutOrderSummaryCardBinding
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import java.time.Month
 import java.util.*
 
@@ -59,7 +60,7 @@ class OrdersAdapter(
             }
             totalAmount += orderData.shippingCharges + orderData.importCharges + orderData.taxAmount
             binding.orderSummaryTotalAmountTv.text =
-                context.getString(R.string.price_text, totalAmount.toString())
+                context.getString(R.string.price_text, totalAmount.formatToTwoDecimals())
         }
     }
 

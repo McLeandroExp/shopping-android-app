@@ -26,7 +26,7 @@ class OrderProductsAdapter(
 		fun bind(itemData: UserData.CartItem) {
 			binding.loaderLayout.loaderFrameLayout.visibility = View.GONE
 			val proData = proList.find { it.productId == itemData.productId } ?: Product()
-			binding.cartProductTitleTv.text = proData.name
+			binding.cartProductTitleTv.text = context.getString(R.string.order_item_product_detail, proData.name, itemData.quantity)
 			binding.cartProductPriceTv.text =
 				context.getString(R.string.price_text, proData.price.toString())
 			if (proData.images.isNotEmpty()) {

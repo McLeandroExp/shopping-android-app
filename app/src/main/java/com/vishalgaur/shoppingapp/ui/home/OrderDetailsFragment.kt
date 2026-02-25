@@ -15,6 +15,7 @@ import com.vishalgaur.shoppingapp.data.utils.OrderStatus
 import com.vishalgaur.shoppingapp.data.utils.StoreDataStatus
 import com.vishalgaur.shoppingapp.databinding.FragmentOrderDetailsBinding
 import com.vishalgaur.shoppingapp.ui.getCompleteAddress
+import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 import com.vishalgaur.shoppingapp.viewModels.HomeViewModel
 import java.time.Month
 import java.util.*
@@ -105,7 +106,9 @@ class OrderDetailsFragment : Fragment() {
 			R.string.order_date_text,
 			Month.values()[(calendar.get(Calendar.MONTH))].name,
 			calendar.get(Calendar.DAY_OF_MONTH).toString(),
-			calendar.get(Calendar.YEAR).toString()
+			calendar.get(Calendar.YEAR).toString(),
+			calendar.get(Calendar.HOUR_OF_DAY),
+			calendar.get(Calendar.MINUTE)
 		)
 		binding.orderDetailsShippingAddLayout.shipAddValueTv.text =
 			getCompleteAddress(orderData.deliveryAddress)
@@ -123,14 +126,16 @@ class OrderDetailsFragment : Fragment() {
 		binding.orderDetailsPaymentLayout.priceItemsAmountTv.text =
 			getString(
 				R.string.price_text,
-				itemsPriceTotal.toString()
+				itemsPriceTotal.formatToTwoDecimals()
 			)
 		binding.orderDetailsPaymentLayout.priceShippingAmountTv.text =
-			getString(R.string.price_text, orderData.shippingCharges.toString())
+			getString(R.string.price_text, orderData.shippingCharges.formatToTwoDecimals())
 		binding.orderDetailsPaymentLayout.priceChargesAmountTv.text =
-			getString(R.string.price_text, (orderData.importCharges + orderData.taxAmount).toString())
+			getString(R.string.price_text, orderData.importCharges.formatToTwoDecimals())
+		binding.orderDetailsPaymentLayout.priceTaxAmountTv.text =
+			getString(R.string.price_text, orderData.taxAmount.formatToTwoDecimals())
 		binding.orderDetailsPaymentLayout.priceTotalAmountTv.text =
-			getString(R.string.price_text, (itemsPriceTotal + orderData.shippingCharges + orderData.importCharges + orderData.taxAmount).toString())
+			getString(R.string.price_text, (itemsPriceTotal + orderData.shippingCharges + orderData.importCharges + orderData.taxAmount).formatToTwoDecimals())
 	}
 
 	private fun setProductsAdapter(itemsList: List<UserData.CartItem>?) {
