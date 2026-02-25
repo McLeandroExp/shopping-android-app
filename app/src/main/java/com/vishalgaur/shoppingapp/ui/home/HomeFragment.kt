@@ -74,16 +74,9 @@ class HomeFragment : Fragment() {
 				val gridLayoutManager = GridLayoutManager(context, 2)
 				gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
 					override fun getSpanSize(position: Int): Int {
-						return when (productAdapter.getItemViewType(position)) {
-							2 -> 2 //ad
-							else -> {
-								val proCount = productAdapter.data.count { it is Product }
-								val adCount = productAdapter.data.size - proCount
-								val totalCount = proCount + (adCount * 2)
-								// product, full for last item
-								if (position + 1 == productAdapter.data.size && totalCount % 2 == 1) 2 else 1
-							}
-						}
+						val totalCount = productAdapter.data.size
+						// product, full for last item if odd
+						return if (position + 1 == totalCount && totalCount % 2 == 1) 2 else 1
 					}
 				}
 				layoutManager = gridLayoutManager
@@ -125,8 +118,7 @@ class HomeFragment : Fragment() {
 						binding.loaderLayout.loaderFrameLayout.visibility = View.GONE
 						binding.productsRecyclerView.visibility = View.VISIBLE
 						binding.productsRecyclerView.adapter?.apply {
-							productAdapter.data =
-								getMixedDataList(productsList, getAdsList())
+							productAdapter.data = productsList
 							notifyDataSetChanged()
 						}
 					}
@@ -332,24 +324,4 @@ class HomeFragment : Fragment() {
 		)
 	}
 
-	private fun getMixedDataList(data: List<Product>, adsList: List<Int>): List<Any> {
-		val itemsList = mutableListOf<Any>()
-		itemsList.addAll(data.sortedBy { it.productId })
-		var currPos = 0
-		if (itemsList.size >= 4) {
-			adsList.forEach label@{ ad ->
-				if (itemsList.size > currPos + 1) {
-					itemsList.add(currPos, ad)
-				} else {
-					return@label
-				}
-				currPos += 5
-			}
-		}
-		return itemsList
-	}
-
-	private fun getAdsList(): List<Int> {
-		return listOf(R.drawable.ad_ex_2, R.drawable.ad_ex_1, R.drawable.ad_ex_3)
-	}
 }

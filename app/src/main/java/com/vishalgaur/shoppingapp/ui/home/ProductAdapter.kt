@@ -13,19 +13,18 @@ import com.bumptech.glide.Glide
 import com.vishalgaur.shoppingapp.R
 import com.vishalgaur.shoppingapp.data.Product
 import com.vishalgaur.shoppingapp.data.ShoppingAppSessionManager
-import com.vishalgaur.shoppingapp.databinding.LayoutHomeAdBinding
 import com.vishalgaur.shoppingapp.databinding.ProductsListItemBinding
 import com.vishalgaur.shoppingapp.getOfferPercentage
 import com.vishalgaur.shoppingapp.data.utils.formatToTwoDecimals
 
 class ProductAdapter(
-	proList: List<Any>,
+	proList: List<Product>,
 	userLikes: List<String>,
 	private val context: Context,
 	private val isMyProducts: Boolean = false,
 	private val isAdminManagement: Boolean = false
 ) :
-	RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+	RecyclerView.Adapter<ProductAdapter.ItemViewHolder>() {
 
 	var data = proList
 	var likesList = userLikes
@@ -117,49 +116,29 @@ class ProductAdapter(
 		}
 	}
 
-	inner class AdViewHolder(binding: LayoutHomeAdBinding) : RecyclerView.ViewHolder(binding.root) {
-		val adImageView: ImageView = binding.adImageView
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+		return ItemViewHolder(
+			ProductsListItemBinding.inflate(
+				LayoutInflater.from(parent.context),
+				parent,
+				false
+			)
+		)
 	}
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-		return when (viewType) {
-			VIEW_TYPE_AD -> AdViewHolder(
-				LayoutHomeAdBinding.inflate(
-					LayoutInflater.from(parent.context),
-					parent,
-					false
-				)
-			)
-			else -> ItemViewHolder(
-				ProductsListItemBinding.inflate(
-					LayoutInflater.from(parent.context),
-					parent,
-					false
-				)
-			)
-		}
-	}
-
-	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-		when (val proData = data[position]) {
-			is Int -> (holder as AdViewHolder).adImageView.setImageResource(proData)
-			is Product -> (holder as ItemViewHolder).bind(proData)
-		}
+	override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+		val proData = data[position]
+		holder.bind(proData)
 	}
 
 	override fun getItemCount(): Int = data.size
 
-	companion object {
-		const val VIEW_TYPE_PRODUCT = 1
-		const val VIEW_TYPE_AD = 2
+	override fun getItemViewType(position: Int): Int {
+		return VIEW_TYPE_PRODUCT
 	}
 
-	override fun getItemViewType(position: Int): Int {
-		return when (data[position]) {
-			is Int -> VIEW_TYPE_AD
-			is Product -> VIEW_TYPE_PRODUCT
-			else -> VIEW_TYPE_PRODUCT
-		}
+	companion object {
+		const val VIEW_TYPE_PRODUCT = 1
 	}
 
 	interface BindImageButtons {
