@@ -47,11 +47,14 @@
 
         <TextView
             android:id="@+id/profile_email_label_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:drawablePadding="16dp"
-            android:padding="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp"
             android:text="@string/profile_email_label_text"
             android:textAppearance="@style/TextAppearance.MyTheme.Body1"
             android:textSize="16sp"
@@ -63,25 +66,27 @@
 
         <TextView
             android:id="@+id/profile_email_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:padding="16dp"
-            android:textAlignment="viewEnd"
+            android:paddingStart="56dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.MyTheme.Subtitle1"
-            app:layout_constraintBottom_toBottomOf="@+id/profile_email_label_tv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/profile_email_label_tv"
-            app:layout_constraintTop_toTopOf="@+id/profile_email_label_tv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_email_label_tv"
             tools:text="somemail@example.com" />
 
         <TextView
             android:id="@+id/profile_mobile_label_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="16dp"
-            android:padding="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp"
             android:text="@string/profile_mobile_label_text"
             android:textAppearance="@style/TextAppearance.MyTheme.Body1"
             android:textSize="16sp"
@@ -89,21 +94,20 @@
             app:drawableStartCompat="@drawable/ic_outline_phone_android_24"
             app:drawableTint="@color/blue_accent_300"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_email_label_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/profile_email_tv" />
 
         <TextView
             android:id="@+id/profile_mobile_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:padding="16dp"
-            android:textAlignment="viewEnd"
+            android:paddingStart="56dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.MyTheme.Subtitle1"
-            app:layout_constraintBottom_toBottomOf="@+id/profile_mobile_label_tv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/profile_mobile_label_tv"
-            app:layout_constraintTop_toTopOf="@+id/profile_mobile_label_tv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_mobile_label_tv"
             tools:text="+91 9999988888" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
