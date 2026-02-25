@@ -223,6 +223,9 @@ class HomeFragment : Fragment() {
 						R.id.action_seeProduct,
 						bundleOf("productId" to productData.productId)
 					)
+				} else {
+					// Navigate to edit screen for sellers
+					navigateToAddEditProductFragment(isEdit = true, productId = productData.productId)
 				}
 			}
 
