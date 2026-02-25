@@ -148,7 +148,7 @@ class AddEditAddressFragment : Fragment() {
 			binding.addressCityEditText.setText(address.city)
 			binding.addressStateEditText.setText(address.state)
 			binding.addressZipcodeEditText.setText(address.zipCode)
-			binding.addressPhoneEditText.setText(address.phoneNumber.substringAfter("+91"))
+			binding.addressPhoneEditText.setText(address.phoneNumber)
 			binding.addAddressSaveBtn.setText(R.string.save_address_btn_text)
 		}
 	}

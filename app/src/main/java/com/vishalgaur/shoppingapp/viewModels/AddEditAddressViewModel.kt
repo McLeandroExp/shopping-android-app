@@ -118,7 +118,7 @@ class AddEditAddressViewModel(application: Application) : AndroidViewModel(appli
 				city.trim(),
 				state.trim(),
 				zipCode.trim(),
-				"+91" + phoneNumber.trim()
+				phoneNumber.trim()
 			)
 			newAddressData.value = newAddress
 			if (_isEdit.value == true) {
