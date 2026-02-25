@@ -298,6 +298,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 	fun getAllOrders() {
 		viewModelScope.launch {
 			_storeDataStatus.value = StoreDataStatus.LOADING
+			// Force refresh from remote
+			authRepository.hardRefreshUserData()
 			val deferredRes = async { authRepository.getOrdersByUserId(currentUser!!) }
 			val res = deferredRes.await()
 			if (res is Success) {
