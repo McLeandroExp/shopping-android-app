@@ -57,6 +57,7 @@ class OrdersAdapter(
             orderData.itemsPrices.forEach { (itemId, price) ->
                 totalAmount += price * (orderData.items.find { it.itemId == itemId }?.quantity ?: 1)
             }
+            totalAmount += orderData.shippingCharges + orderData.importCharges + orderData.taxAmount
             binding.orderSummaryTotalAmountTv.text =
                 context.getString(R.string.price_text, totalAmount.toString())
         }

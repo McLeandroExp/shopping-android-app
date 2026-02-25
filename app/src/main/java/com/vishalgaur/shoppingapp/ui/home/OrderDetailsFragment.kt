@@ -126,11 +126,11 @@ class OrderDetailsFragment : Fragment() {
 				itemsPriceTotal.toString()
 			)
 		binding.orderDetailsPaymentLayout.priceShippingAmountTv.text =
-			getString(R.string.price_text, "0")
+			getString(R.string.price_text, orderData.shippingCharges.toString())
 		binding.orderDetailsPaymentLayout.priceChargesAmountTv.text =
-			getString(R.string.price_text, "0")
+			getString(R.string.price_text, (orderData.importCharges + orderData.taxAmount).toString())
 		binding.orderDetailsPaymentLayout.priceTotalAmountTv.text =
-			getString(R.string.price_text, (itemsPriceTotal + orderData.shippingCharges).toString())
+			getString(R.string.price_text, (itemsPriceTotal + orderData.shippingCharges + orderData.importCharges + orderData.taxAmount).toString())
 	}
 
 	private fun setProductsAdapter(itemsList: List<UserData.CartItem>?) {
